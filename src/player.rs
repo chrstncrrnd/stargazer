@@ -19,8 +19,9 @@ enum Direction {
 
 
 impl Player{
+
     //move the player
-    fn move_player(&mut self, direction: Direction){
+     fn move_player(&mut self, direction: Direction){
         match direction{
             Direction::Forwards => self.pos_y -= self.player_speed,
             Direction::Backwards => self.pos_y += self.player_speed,
@@ -31,8 +32,8 @@ impl Player{
 
     pub fn render(&mut self, check_inputs: bool){
         use Direction::*;
+        draw_texture(self.texture, self.pos_x, self.pos_y, WHITE);
         draw_text(self.name.as_str(), self.pos_x, self.pos_y, 10.0, BLACK);
-        // draw_texture(self.texture, self.pos_x, self.pos_y, Default::default());
         if check_inputs {
             //move up
             if is_key_down(KeyCode::W){
