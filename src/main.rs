@@ -1,9 +1,11 @@
 mod player;
 mod planet_all;
+mod utils;
+mod planet_surface_all;
 
 use macroquad::prelude::*;
 use planet_all::planet::Planet;
-
+use player::Player;
 
 pub enum GameState{
     Menu,
@@ -27,34 +29,29 @@ fn window_config() -> Conf{
 
 #[macroquad::main(window_config)]
 async fn main() {
-
-
-
-    let main_character_texture = load_texture("assets/astronaut.png").await.unwrap();
+    let background = render_target(macroquad::window::screen_width() as u32, macroquad::window::screen_height() as u32);
 
     //main character, you can also create other characters with this.
-    let mut main_character = player::Player {
-        texture: main_character_texture,
-        width: 10.0,
-        height: 10.0,
+    let mut main_character = Player {
+        texture: load_texture("assets/astronaut_new.png").await.unwrap(),
+        width: 60.0,
+        height: 60.0,
         name: "Main_Character".to_string(),
         pos_x: 500.0,
         pos_y: 500.0,
-        player_speed: 10.0
-};
-
-    let planet = Planet{
-        color: Color::new(329.0, 132.0, 0.0, 255.0),
-        radius: 100.0,
-        pos_y: 300.0,
-        pos_x: 500.0
+        player_speed: 10.0,
+        facing_left: true,
+        name_font: load_ttf_font("assets/Font.ttf").await.unwrap()
     };
+
 
     //main game loop
     loop {
+
         clear_background(WHITE);
-        planet.render();
         main_character.render(true);
+        //logic to keep camera over the player
+
         next_frame().await;
     }
 }

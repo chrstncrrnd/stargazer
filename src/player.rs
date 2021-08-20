@@ -7,7 +7,9 @@ pub struct Player{
     pub name: String,
     pub pos_x: f32,
     pub pos_y: f32,
-    pub player_speed: f32
+    pub player_speed: f32,
+    pub facing_left: bool,
+    pub name_font: Font
 }
 
 enum Direction {
@@ -30,27 +32,49 @@ impl Player{
         }
     }
 
+
     pub fn render(&mut self, check_inputs: bool){
         use Direction::*;
-        draw_texture(self.texture, self.pos_x, self.pos_y, WHITE);
-        draw_text(self.name.as_str(), self.pos_x, self.pos_y, 10.0, BLACK);
         if check_inputs {
             //move up
             if is_key_down(KeyCode::W){
-                self.move_player(Forwards)
+                self.move_player(Forwards);
+
             }
-                //move down
+            //move down
             else if is_key_down(KeyCode::S){
-                self.move_player(Backwards)
+                self.move_player(Backwards);
             }
             //move left
             else if is_key_down(KeyCode::A){
-                self.move_player(Left)
+                self.move_player(Left);
+                self.facing_left = true;
             }
             else if is_key_down(KeyCode::D){
-                self.move_player(Right)
+                self.move_player(Right);
+                self.facing_left = false;
             }
         }
+
+
+        //render the player name
+        draw_text_ex(self.name.as_str(),
+                     self.pos_x - (measure_text(self.name.as_str(), Option::from(self.name_font), 30, 1.0).width - self.width) / 2.0,
+                     self.pos_y - 10.0,
+                     TextParams{
+            font: self.name_font,
+            font_size: 30,
+            font_scale: 1.0,
+            font_scale_aspect: 1.0,
+            color: BLACK
+        });
+
+        draw_texture_ex(self.texture, self.pos_x, self.pos_y, WHITE, DrawTextureParams{
+            dest_size: Some(vec2(self.height, self.width)),
+            flip_x: self.facing_left,
+            ..Default::default()
+        });
+
     }
 
 }
