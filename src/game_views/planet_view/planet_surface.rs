@@ -1,6 +1,7 @@
 use macroquad::math::Vec2;
 
 use crate::planet_surface_all::block::block;
+use crate::game_views::planet_view::block::block;
 
 pub struct PlanetSurface{
     pub render_distance: Vec2,

@@ -1,15 +1,11 @@
-use macroquad::prelude::*;
-
-use player::Player;
-
-use crate::planet_surface_all::block::block::Block;
-use crate::planet_surface_all::planet_surface::PlanetSurface;
-
-mod player;
-mod planet_all;
 mod utils;
-mod planet_surface_all;
+mod game_views;
+mod player_handlers;
 
+use macroquad::prelude::*;
+use crate::game_views::planet_view::planet_surface::PlanetSurface;
+use crate::game_views::planet_view::block::block::Block;
+use crate::player_handlers::player::Player;
 //custom window config
 fn window_config() -> Conf{
     Conf{
@@ -56,9 +52,6 @@ async fn main() {
         main_planet_surface.render();
         main_character.render(true);
         //logic to keep camera over the player
-        
-
-
         next_frame().await;
     }
 }
