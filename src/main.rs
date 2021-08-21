@@ -4,12 +4,11 @@ mod resources;
 mod utils;
 mod world_generation;
 
-use crate::game_views::planet_view::block::block::{Block, BlockTypes};
 use crate::game_views::planet_view::planet_surface::PlanetSurface;
 use crate::player_handlers::player::Player;
 use macroquad::prelude::*;
 use resources::Resources;
-use std::convert::TryInto;
+use bracket_noise::prelude::{FastNoise, NoiseType, FractalType, CellularDistanceFunction, CellularReturnType};
 
 //custom window config
 fn window_config() -> Conf {
@@ -26,7 +25,7 @@ fn window_config() -> Conf {
 
 #[macroquad::main(window_config)]
 async fn main() {
-    let game_resources = Resources::new().await.unwrap();
+    let game_resources: Resources = Resources::new().await.unwrap();
 
     //main character, you can also create other characters with this.
     let mut main_character = Player {
@@ -40,25 +39,28 @@ async fn main() {
         name_font: game_resources.font,
     };
 
+    let mut noise = FastNoise::seeded(crate::world_generation::seed::get_seed());
+    noise.set_noise_type(NoiseType::PerlinFractal);
+    noise.set_fractal_type(FractalType::FBM);
+    noise.set_fractal_octaves(5);
+    noise.set_fractal_gain(0.6);
+    noise.set_fractal_lacunarity(2.0);
+    noise.set_frequency(2.0);
+
+
     let mut main_planet_surface = PlanetSurface {
         render_distance: vec2(
             window_config().window_width as f32,
             window_config().window_height as f32,
         ),
         origin: vec2(0.0, 0.0),
-        block: Block {
-            texture: Option::Some(game_resources.block_resources.grass),
-            block_type: BlockTypes::Grass,
-            ..Default::default()
-        },
+        noise
     };
-
     //main game loop
     loop {
         main_character.texture.set_filter(FilterMode::Nearest);
         clear_background(WHITE);
-
-        main_planet_surface.render();
+        main_planet_surface.render(&game_resources.block_resources);
         main_character.render(true);
         //logic to keep camera over the player
         next_frame().await;

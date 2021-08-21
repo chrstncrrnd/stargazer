@@ -1,1 +1,3 @@
-const DEFAULT_SEED: f64 = 69.420;
+pub fn get_seed() -> u64{
+    69420
+}

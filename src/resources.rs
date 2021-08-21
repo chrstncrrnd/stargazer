@@ -8,7 +8,7 @@ pub struct BlockResources {
 }
 
 impl BlockResources {
-    async fn new() -> Result<BlockResources, FileError> {
+    pub async fn new() -> Result<BlockResources, FileError> {
         let dirt = load_texture("assets/blocks/dirt.png").await?;
         dirt.set_filter(FilterMode::Nearest);
 
@@ -33,7 +33,7 @@ impl BlockResources {
 pub struct Resources {
     pub player_texture: Texture2D,
     pub font: Font,
-    pub block_resources: BlockResources,
+    pub block_resources: BlockResources
 }
 
 impl Resources {
@@ -41,14 +41,13 @@ impl Resources {
         let player_texture = load_texture("assets/player_texture_default.png").await?;
         player_texture.set_filter(FilterMode::Nearest);
 
-        let block_resources = BlockResources::new().await?;
-
         let font = load_ttf_font("assets/Font.ttf").await.unwrap();
 
+        let block_resources = BlockResources::new().await.unwrap();
         Ok(Resources {
             player_texture,
             font,
-            block_resources,
+            block_resources
         })
     }
 }
