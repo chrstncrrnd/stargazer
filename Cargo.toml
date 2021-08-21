@@ -7,3 +7,4 @@ edition = "2018"
 
 [dependencies]
 macroquad = "0.3.8"
+bracket-noise = "0.8.2"

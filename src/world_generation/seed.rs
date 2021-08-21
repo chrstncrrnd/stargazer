@@ -1,0 +1,1 @@
+const DEFAULT_SEED: f64 = 69.420;
