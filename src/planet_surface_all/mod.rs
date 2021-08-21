@@ -1,2 +1,2 @@
 pub mod planet_surface;
-mod block;
+pub mod block;

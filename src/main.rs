@@ -1,19 +1,14 @@
+use macroquad::prelude::*;
+
+use player::Player;
+
+use crate::planet_surface_all::block::block::Block;
+use crate::planet_surface_all::planet_surface::PlanetSurface;
+
 mod player;
 mod planet_all;
 mod utils;
 mod planet_surface_all;
-
-use macroquad::prelude::*;
-use planet_all::planet::Planet;
-use player::Player;
-
-pub enum GameState{
-    Menu,
-    Loading,
-    Playing,
-    Won,
-    Lost
-}
 
 //custom window config
 fn window_config() -> Conf{
@@ -21,15 +16,16 @@ fn window_config() -> Conf{
         fullscreen: false,
         window_height: 800,
         window_width: 1000,
+        window_resizable: false,
         window_title: String::from("Stargazers"),
         ..Default::default()
-
     }
 }
 
 #[macroquad::main(window_config)]
 async fn main() {
-    let background = render_target(macroquad::window::screen_width() as u32, macroquad::window::screen_height() as u32);
+
+
 
     //main character, you can also create other characters with this.
     let mut main_character = Player {
@@ -37,11 +33,19 @@ async fn main() {
         width: 60.0,
         height: 60.0,
         name: "Main_Character".to_string(),
-        pos_x: 500.0,
-        pos_y: 500.0,
+        position: vec2(100.0, 100.0),
         player_speed: 10.0,
         facing_left: true,
         name_font: load_ttf_font("assets/Font.ttf").await.unwrap()
+    };
+
+    let mut main_planet_surface = PlanetSurface{
+        render_distance: vec2(window_config().window_width as f32, window_config().window_height as f32),
+        origin: vec2(0.0,0.0),
+        block: Block{
+            texture: Option::from(load_texture("assets/dirt.png").await.unwrap()),
+            ..Default::default()
+        }
     };
 
 
@@ -49,8 +53,11 @@ async fn main() {
     loop {
 
         clear_background(WHITE);
+        main_planet_surface.render();
         main_character.render(true);
         //logic to keep camera over the player
+        
+
 
         next_frame().await;
     }

@@ -5,8 +5,7 @@ pub struct Player{
     pub width: f32,
     pub height: f32,
     pub name: String,
-    pub pos_x: f32,
-    pub pos_y: f32,
+    pub position: Vec2,
     pub player_speed: f32,
     pub facing_left: bool,
     pub name_font: Font
@@ -25,10 +24,10 @@ impl Player{
     //move the player
      fn move_player(&mut self, direction: Direction){
         match direction{
-            Direction::Forwards => self.pos_y -= self.player_speed,
-            Direction::Backwards => self.pos_y += self.player_speed,
-            Direction::Left => self.pos_x -= self.player_speed,
-            Direction::Right => self.pos_x += self.player_speed
+            Direction::Forwards => self.position.y -= self.player_speed,
+            Direction::Backwards => self.position.y += self.player_speed,
+            Direction::Left => self.position.x -= self.player_speed,
+            Direction::Right => self.position.x += self.player_speed
         }
     }
 
@@ -59,8 +58,8 @@ impl Player{
 
         //render the player name
         draw_text_ex(self.name.as_str(),
-                     self.pos_x - (measure_text(self.name.as_str(), Option::from(self.name_font), 30, 1.0).width - self.width) / 2.0,
-                     self.pos_y - 10.0,
+                     self.position.x - (measure_text(self.name.as_str(), Option::from(self.name_font), 30, 1.0).width - self.width) / 2.0,
+                     self.position.y - 10.0,
                      TextParams{
             font: self.name_font,
             font_size: 30,
@@ -69,7 +68,7 @@ impl Player{
             color: BLACK
         });
 
-        draw_texture_ex(self.texture, self.pos_x, self.pos_y, WHITE, DrawTextureParams{
+        draw_texture_ex(self.texture, self.position.x, self.position.y, WHITE, DrawTextureParams{
             dest_size: Some(vec2(self.height, self.width)),
             flip_x: self.facing_left,
             ..Default::default()

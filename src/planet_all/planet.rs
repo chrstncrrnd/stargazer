@@ -7,15 +7,6 @@ pub struct Planet{
     pub pos_y: f32
 }
 
-pub enum PlanetType{
-    Sea,
-    Snowy,
-    Forest,
-    City,
-    Ideal,
-    Desert,
-    Swamp
-}
 
 impl Planet{
 
