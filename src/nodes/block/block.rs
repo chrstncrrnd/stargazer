@@ -1,6 +1,6 @@
 use macroquad::prelude::*;
-use crate::resources::BlockResources;
 
+use crate::resources::BlockResources;
 
 pub enum Blocks{
     Dirt,
