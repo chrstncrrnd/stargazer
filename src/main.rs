@@ -20,7 +20,6 @@ fn window_config() -> Conf {
         window_height: 800,
         window_width: 1000,
         window_title: String::from("Stargazers"),
-        high_dpi: true,
         ..Default::default()
     }
 }
@@ -52,12 +51,14 @@ async fn main() {
 
     //main game loop
     loop {
-        main_camera.update(&main_character);
-        set_camera(&main_camera.macroquad_camera);
-        clear_background(WHITE);
-        main_planet_surface.render(&game_resources.block_resources, &main_character);
-        main_character.render(true);
-        //logic to keep camera over the player
-        next_frame().await;
+        {
+            main_camera.update(&main_character);
+            set_camera(&main_camera.macroquad_camera);
+            clear_background(WHITE);
+            main_planet_surface.render(&game_resources.block_resources, &main_character);
+            main_character.render(true);
+            //logic to keep camera over the player
+            next_frame().await;
+        }
     }
 }
