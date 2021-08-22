@@ -32,7 +32,6 @@ impl Player {
     pub fn render(&mut self, check_inputs: bool) {
         use Direction::*;
         if check_inputs {
-
             //TODO: make the character be able to go sideways without it going so fast lol
             //move up
             if is_key_down(KeyCode::W) {
@@ -46,8 +45,7 @@ impl Player {
             else if is_key_down(KeyCode::A) {
                 self.move_player(Left);
                 self.facing_left = true;
-            }
-            else if is_key_down(KeyCode::D) {
+            } else if is_key_down(KeyCode::D) {
                 self.move_player(Right);
                 self.facing_left = false;
             }

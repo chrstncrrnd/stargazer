@@ -1,3 +1,3 @@
-pub fn get_seed() -> u64{
+pub fn get_seed() -> u64 {
     69420
 }

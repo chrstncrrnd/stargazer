@@ -33,7 +33,7 @@ impl BlockResources {
 pub struct Resources {
     pub player_texture: Texture2D,
     pub font: Font,
-    pub block_resources: BlockResources
+    pub block_resources: BlockResources,
 }
 
 impl Resources {
@@ -47,7 +47,7 @@ impl Resources {
         Ok(Resources {
             player_texture,
             font,
-            block_resources
+            block_resources,
         })
     }
 }
