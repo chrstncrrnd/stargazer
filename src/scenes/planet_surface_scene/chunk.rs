@@ -10,6 +10,7 @@ pub struct Chunk {
     pub blocks: Vec<Block>,
 }
 
+
 impl Chunk {
     pub fn load(position: Vec2) -> Self {
         Chunk {

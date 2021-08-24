@@ -5,111 +5,111 @@ use macroquad::window::{screen_height, screen_width};
 use crate::nodes::player::Player;
 use crate::resources::BlockResources;
 use crate::scenes::planet_surface_scene::chunk::Chunk;
-use std::fs::read_dir;
-
 pub struct PlanetSurface {
     pub noise: FastNoise,
     pub chunks: Vec<Chunk>,
 }
 
+struct RectI{
+    x: i32,
+    y: i32,
+    w: i32,
+    h: i32
+}
+
+struct Vec2I{
+    x: i32,
+    y: i32
+}
+
+impl Vec2I{
+    pub fn from_vec2(vec2: Vec2) -> Self{
+        Vec2I{
+            x: vec2.x as i32,
+            y: vec2.y as i32
+        }
+    }
+    pub fn to_vec2(x: i32, y: i32) -> Vec2{
+        vec2(x as f32, y as f32)
+    }
+
+
+}
+
 impl PlanetSurface {
-    fn is_in_render_area(render_area: &Rect, position: Vec2) -> bool {
+
+    fn is_in_render_area(render_area: &RectI, position: Vec2I) -> bool {
         if position.x > render_area.x && position.x < render_area.x + render_area.w {
-            if position.y > render_area.y && position.y < render_area.y + render_area.h {
+            if position.y > render_area.y && position.y < render_area.y + render_area.h{
                 return true;
             }
         }
         return false;
     }
 
-    fn load_chunk(&mut self, position: Vec2){
-        self.chunks.push(Chunk::load(position));
+    fn round_to_nearest(initial_number: f32, multiple_of: i32) -> i32{
+        if initial_number as i32 % multiple_of == 0{
+            return initial_number as i32;
+        }
+
+        for i in initial_number as i32.. {
+            if i % multiple_of == 0{
+                return i;
+            }
+        }
+        initial_number as i32
     }
 
-    //TODO write a function that checks teh render area and see if all of the possibe locations are filled, if they arent then push chunks there.
-    fn update_chunks(&mut self, render_area: &Rect, block_size: usize){
-        let mut start_position_x: i32 = 0;
-        let mut start_position_y: i32 = 0;
-        let mut end_position_x: i32 = 0;
-        let mut end_position_y: i32 = 0;
-        let mut exists_chunk: bool = false;
-        for i in render_area.x as i32.. {
-            if i % (block_size*4) as i32 == 0{
-                start_position_x = i;
-                break;
-            }
-        }
-        for i in render_area.y as i32.. {
-            if i % (block_size*4)as i32 == 0{
-                start_position_y = i;
-                break;
-            }
-        }
-
-        for i in (render_area.x + render_area.w) as i32.. {
-            if i % (block_size*4)as i32 == 0{
-                end_position_x = i;
-                break;
-            }
-        }
-
-        for i in (render_area.y + render_area.h) as i32.. {
-            if i % (block_size*4)as i32 == 0{
-                end_position_y = i;
-                break;
-            }
-        }
-
-
-        for x in (start_position_x..end_position_x).step_by(block_size*4){
-            for y in (start_position_y..end_position_y).step_by(block_size*4){
-                for i in 0..self.chunks.len() {
-                    let current_position = vec2(x as f32, y as f32);
-                    self.load_chunk(current_position);
-                }
-            }
-        }
-
+    fn spawn_chunk(&mut self, x: i32, y: i32){
+        self.chunks.push(Chunk::load(vec2(x as f32, y as f32)));
     }
-
 
     pub fn render(&mut self, block_resources: &BlockResources, player: &Player) {
-        let block_size: usize = 70;
-
-        // let render_area = Rect {
-        //     x: player.position.x - (screen_width() / 2.) - 240.,
-        //     y: player.position.y - (screen_height() / 2.) - 240.,
-        //     w: screen_width() + 240.,
-        //     h: screen_height() +240.,
-        // };
+        let mut chunk_exists: bool = false;
+        let block_size: i32 = 70;
 
         let render_area = Rect {
-            x: player.position.x - (screen_width() / 2.),
-            y: player.position.y - (screen_height() / 2.),
-            w: screen_width(),
-            h: screen_height(),
+            x: player.position.x - (screen_width() / 2.) - (block_size*4*2) as f32,
+            y: player.position.y - (screen_height() / 2.) - (block_size*4*2) as f32,
+            w: screen_width() + (block_size*4*2) as f32,
+            h: screen_height() + (block_size*4*2) as f32,
         };
 
-        //repopulate all of the chunks if they are empty
+        let spawnable_area = RectI{
+            x: PlanetSurface::round_to_nearest(render_area.x, block_size * 4) as i32,
+            y: PlanetSurface::round_to_nearest(render_area.y, block_size * 4) as i32,
+            w: PlanetSurface::round_to_nearest(render_area.w, block_size * 4) as i32,
+            h: PlanetSurface::round_to_nearest(render_area.h, block_size * 4) as i32,
+        };
+
         if self.chunks.is_empty() {
-            for x in render_area.x as i32..(render_area.x + render_area.w) as i32 {
-                for y in render_area.y as i32..(render_area.y + render_area.h) as i32 {
-                    if x % (block_size * 4) as i32 == 0 && y % (block_size * 4) as i32 == 0 {
-                        let chunk = Chunk::load(vec2(x as f32, y as f32));
-                        self.chunks.push(chunk);
-                    }
+            for x in (spawnable_area.x..spawnable_area.x + spawnable_area.w).step_by((block_size*4) as usize) {
+                for y in (spawnable_area.y..spawnable_area.y + spawnable_area.h).step_by((block_size*4) as usize) {
+                    self.spawn_chunk(x,y);
                 }
             }
         }
-        //load in new chunks coming into render distance
-        self.update_chunks(&render_area, block_size);
-        //remove the chunks that arent in render distance
-        self.chunks.retain(|chunk| PlanetSurface::is_in_render_area(&render_area, chunk.position));
 
-
-        //render all of the chunks
-        for chunk in self.chunks.iter_mut() {
-            chunk.render(block_size, block_resources, &self.noise);
+        for x in (spawnable_area.x..spawnable_area.x + spawnable_area.w).step_by((block_size*4) as usize) {
+            for y in (spawnable_area.y..spawnable_area.y + spawnable_area.h).step_by((block_size*4) as usize) {
+                chunk_exists = false;
+                for chunk in self.chunks.iter_mut(){
+                    if chunk.position == Vec2I::to_vec2(x, y){
+                        chunk_exists = true;
+                    }
+                }
+                if !chunk_exists{
+                    self.spawn_chunk(x, y);
+                }
+            }
         }
+
+
+        self.chunks.retain(|chunk| PlanetSurface::is_in_render_area(&spawnable_area, Vec2I::from_vec2(chunk.position)));
+
+        for chunk in self.chunks.iter_mut() {
+            chunk.render(block_size as usize, block_resources, &self.noise);
+        }
+
     }
 }
