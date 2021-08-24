@@ -22,6 +22,10 @@ impl PlanetSurface {
         return false;
     }
 
+    fn load_chunk(&mut self, position: Vec2){
+        self.chunks.push(Chunk::load(position));
+    }
+
     //TODO write a function that checks teh render area and see if all of the possibe locations are filled, if they arent then push chunks there.
     fn update_chunks(&mut self, render_area: &Rect, block_size: usize){
         let mut start_position_x: i32 = 0;
@@ -59,13 +63,9 @@ impl PlanetSurface {
 
         for x in (start_position_x..end_position_x).step_by(block_size*4){
             for y in (start_position_y..end_position_y).step_by(block_size*4){
-                for chunk in self.chunks.iter() {
-                   if chunk.position == vec2(x as f32, y as f32) {
-                       exists_chunk = true;
-                   }
-                }
-                if !exists_chunk {
-                    self.chunks.push(Chunk::load(vec2(x as f32, y as f32)));
+                for i in 0..self.chunks.len() {
+                    let current_position = vec2(x as f32, y as f32);
+                    self.load_chunk(current_position);
                 }
             }
         }
@@ -74,7 +74,6 @@ impl PlanetSurface {
 
 
     pub fn render(&mut self, block_resources: &BlockResources, player: &Player) {
-        let mut chunks_to_remove: Vec<usize> = Vec::new();
         let block_size: usize = 70;
 
         // let render_area = Rect {
@@ -102,15 +101,15 @@ impl PlanetSurface {
                 }
             }
         }
-
+        //load in new chunks coming into render distance
         self.update_chunks(&render_area, block_size);
-
         //remove the chunks that arent in render distance
-        self.chunks
-            .retain(|chunk| PlanetSurface::is_in_render_area(&render_area, chunk.position));
+        self.chunks.retain(|chunk| PlanetSurface::is_in_render_area(&render_area, chunk.position));
+
+
         //render all of the chunks
         for chunk in self.chunks.iter_mut() {
-            chunk.render(block_size, block_resources, &self.noise)
+            chunk.render(block_size, block_resources, &self.noise);
         }
     }
 }
