@@ -17,7 +17,7 @@ fn window_config() -> Conf {
     Conf {
         fullscreen: false,
         window_height: 800,
-        window_width: 1000,
+        window_width: 1920,
         window_title: String::from("Stargazers"),
         ..Default::default()
     }

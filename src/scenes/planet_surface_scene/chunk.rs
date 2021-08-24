@@ -30,6 +30,7 @@ impl Chunk {
                     let mut block = Block::new(
                         vec2(self.position.x + x as f32, self.position.y + y as f32),
                         Blocks::Error,
+                        blocksize
                     );
                     let current_noise = noise.get_noise(
                         self.position.x + ((x) as f32) / 1000.,

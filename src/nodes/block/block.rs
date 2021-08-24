@@ -26,10 +26,10 @@ impl Default for Block {
 }
 
 impl Block {
-    pub fn new(position_: Vec2, block_type_: Blocks) -> Self {
+    pub fn new(position_: Vec2, block_type_: Blocks, size: usize) -> Self {
         Block {
             position: position_,
-            size: 70.,
+            size: size as f32,
             block_type: block_type_,
         }
     }
