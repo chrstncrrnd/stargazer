@@ -8,6 +8,7 @@ use crate::scenes::planet_surface_scene::chunk::Chunk;
 pub struct PlanetSurface {
     pub noise: FastNoise,
     pub chunks: Vec<Chunk>,
+    pub checking: bool
 }
 
 struct RectI{
@@ -65,7 +66,7 @@ impl PlanetSurface {
     }
 
     pub fn render(&mut self, block_resources: &BlockResources, player: &Player) {
-        let mut chunk_exists: bool = false;
+        let mut chunk_exists: bool;
         let block_size: i32 = 50;
 
         let render_area = Rect {
@@ -90,26 +91,29 @@ impl PlanetSurface {
             }
         }
 
-        for x in (spawnable_area.x..spawnable_area.x + spawnable_area.w).step_by((block_size*4) as usize) {
-            for y in (spawnable_area.y..spawnable_area.y + spawnable_area.h).step_by((block_size*4) as usize) {
-                chunk_exists = false;
-                for chunk in self.chunks.iter_mut(){
-                    if chunk.position == Vec2I::to_vec2(x, y){
-                        chunk_exists = true;
+        if self.checking{
+            for x in (spawnable_area.x..spawnable_area.x + spawnable_area.w).step_by((block_size*4) as usize) {
+                for y in (spawnable_area.y..spawnable_area.y + spawnable_area.h).step_by((block_size*4) as usize) {
+                    chunk_exists = false;
+                    for chunk in self.chunks.iter_mut(){
+                        if chunk.position == Vec2I::to_vec2(x, y){
+                            chunk_exists = true;
+                        }
+                    }
+                    if !chunk_exists{
+                        self.spawn_chunk(x, y);
                     }
                 }
-                if !chunk_exists{
-                    self.spawn_chunk(x, y);
-                }
-            }
+        }   
         }
-
 
         self.chunks.retain(|chunk| PlanetSurface::is_in_render_area(&spawnable_area, Vec2I::from_vec2(chunk.position)));
 
         for chunk in self.chunks.iter_mut() {
             chunk.render(block_size as usize, block_resources, &self.noise);
         }
+
+        self.checking = !self.checking;
 
     }
 }

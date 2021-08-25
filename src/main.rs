@@ -5,7 +5,7 @@ use nodes::player::Player;
 use resources::Resources;
 
 use crate::scenes::planet_surface_scene::planet_surface::PlanetSurface;
-use bracket_noise::prelude::{FastNoise, FractalType, NoiseType};
+use bracket_noise::prelude::{FastNoise, NoiseType};
 
 mod nodes;
 mod resources;
@@ -48,6 +48,7 @@ async fn main() {
     
     let mut main_planet_surface = PlanetSurface {
         noise,
+        checking: false,
         chunks: Vec::new(),
     };
     let mut main_camera = Camera::default();

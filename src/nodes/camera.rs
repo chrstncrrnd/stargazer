@@ -7,14 +7,6 @@ pub struct Camera {
     pub macroquad_camera: Camera2D,
 }
 
-impl Camera {
-    pub fn new(bounds: Rect, macroquad_camera: Camera2D) -> Camera {
-        Camera {
-            bounds,
-            macroquad_camera,
-        }
-    }
-}
 
 impl Default for Camera {
     fn default() -> Self {
