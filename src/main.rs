@@ -5,7 +5,7 @@ use nodes::player::Player;
 use resources::Resources;
 
 use crate::scenes::planet_surface_scene::planet_surface::PlanetSurface;
-use bracket_noise::prelude::{FastNoise, NoiseType};
+use bracket_noise::prelude::{FastNoise, FractalType, NoiseType};
 
 mod nodes;
 mod resources;
@@ -32,7 +32,7 @@ async fn main() {
         texture: game_resources.player_texture,
         width: 100.0,
         height: 100.0,
-        name: "Main_Character".to_string(),
+        name: "Chrstn".to_string(),
         position: vec2(screen_width() / 2., screen_height() / 2.),
         player_speed: 10.0,
         facing_left: true,
@@ -40,9 +40,12 @@ async fn main() {
     };
 
     let mut noise = FastNoise::seeded(crate::world_generation::seed::get_seed());
-    noise.set_noise_type(NoiseType::Perlin);
-    noise.set_frequency(2.0);
+    noise.set_noise_type(NoiseType::PerlinFractal);
+    noise.set_fractal_octaves(5);
+    noise.set_fractal_lacunarity(1.0);
+    noise.set_frequency(1.0);
 
+    
     let mut main_planet_surface = PlanetSurface {
         noise,
         chunks: Vec::new(),

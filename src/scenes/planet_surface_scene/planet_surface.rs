@@ -66,7 +66,7 @@ impl PlanetSurface {
 
     pub fn render(&mut self, block_resources: &BlockResources, player: &Player) {
         let mut chunk_exists: bool = false;
-        let block_size: i32 = 70;
+        let block_size: i32 = 50;
 
         let render_area = Rect {
             x: player.position.x - (screen_width() / 2.) - (block_size*4*2) as f32,
