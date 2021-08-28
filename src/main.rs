@@ -4,7 +4,8 @@ use nodes::camera::Camera;
 use nodes::player::Player;
 use resources::Resources;
 
-use crate::scenes::planet_surface_scene::planet_surface::PlanetSurface;
+use crate::scenes::planet_surface_scene::renderer::Renderer;
+use crate::world_generation::terrain::{AlphaTerrain, GrassOnly};
 use bracket_noise::prelude::{FastNoise, NoiseType};
 
 mod nodes;
@@ -30,37 +31,32 @@ async fn main() {
     //main character, you can also create other characters with this.
     let mut main_character = Player {
         texture: game_resources.player_texture,
-        width: 100.0,
-        height: 100.0,
+        width: 50.0,
+        height: 50.0,
         name: "Chrstn".to_string(),
         position: vec2(screen_width() / 2., screen_height() / 2.),
-        player_speed: 10.0,
+        player_speed: 5.0,
         facing_left: true,
         name_font: game_resources.font,
     };
 
-    let mut noise = FastNoise::seeded(crate::world_generation::seed::get_seed());
-    noise.set_noise_type(NoiseType::PerlinFractal);
-    noise.set_fractal_octaves(5);
-    noise.set_fractal_lacunarity(1.0);
-    noise.set_frequency(1.0);
-
-    
-    let mut main_planet_surface = PlanetSurface {
-        noise,
-        checking: false,
-        chunks: Vec::new(),
+    let mut planet_surface = Renderer {
+        blocks: Vec::new(),
+        blocksize: 40,
+        terrain_generator: Box::new(AlphaTerrain { noise: None }),
     };
+
+    planet_surface.init();
+
     let mut main_camera = Camera::default();
 
     //main game loop
     loop {
+        clear_background(WHITE);
         main_camera.update(&main_character);
         set_camera(&main_camera.macroquad_camera);
-        clear_background(WHITE);
-        main_planet_surface.render(&game_resources.block_resources, &main_character);
+        planet_surface.render(&main_character, &game_resources.block_resources);
         main_character.render(true);
-        //logic to keep camera over the player
         next_frame().await;
     }
 }

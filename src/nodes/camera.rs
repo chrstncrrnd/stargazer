@@ -7,7 +7,6 @@ pub struct Camera {
     pub macroquad_camera: Camera2D,
 }
 
-
 impl Default for Camera {
     fn default() -> Self {
         Camera {

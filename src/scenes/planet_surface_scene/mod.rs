@@ -1,2 +1,2 @@
-pub mod chunk;
-pub mod planet_surface;
+pub mod block;
+pub mod renderer;
