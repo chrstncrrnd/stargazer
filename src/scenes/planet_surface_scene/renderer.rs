@@ -4,12 +4,12 @@ use crate::scenes::planet_surface_scene::block::Block;
 use crate::world_generation::terrain::BlockType;
 use crate::world_generation::terrain::TerrainGenerator;
 use macroquad::prelude::*;
-use std::borrow::Borrow;
 
 pub struct Renderer {
     pub blocks: Vec<Block>,
     pub blocksize: i32,
     pub terrain_generator: Box<dyn TerrainGenerator>,
+    pub runner_step: u8,
 }
 
 impl Renderer {
@@ -38,14 +38,17 @@ impl Renderer {
         return false;
     }
 
+
+
     pub fn render(&mut self, player: &Player, textures: &BlockResources) {
         //render the blocks
+        let mut block_exists: bool;
 
         let render_area = Rect {
             x: player.position.x - (screen_width() / 2.) - (100) as f32,
             y: player.position.y - (screen_height() / 2.) - (100) as f32,
-            w: screen_width() + (100) as f32,
-            h: screen_height() + (100) as f32,
+            w: screen_width() + (200) as f32,
+            h: screen_height() + (200) as f32,
         };
 
         let spawnable_area = Rect {
@@ -69,6 +72,31 @@ impl Renderer {
                 }
             }
         }
+        if self.runner_step == 5 {
+            for x in (spawnable_area.x as i32..(spawnable_area.x + spawnable_area.w) as i32)
+                .step_by((self.blocksize) as usize)
+            {
+                for y in (spawnable_area.y as i32..(spawnable_area.y + spawnable_area.h) as i32)
+                    .step_by((self.blocksize) as usize)
+                {
+                    block_exists = false;
+                    for block in self.blocks.iter() {
+                        if block.position == vec2(x as f32, y as f32) {
+                            block_exists = true;
+                            break
+                        }
+                    }
+                    if !block_exists {
+                        self.blocks.push(Block {
+                            position: vec2(x as f32, y as f32),
+                            block_type: self.terrain_generator.get_block(vec2(x as f32, y as f32))
+                        })
+                    }
+                }
+            }
+            self.runner_step = 0;
+        }
+        self.runner_step += 1;
 
         self.blocks.retain(|block| Renderer::is_in_render_area(&render_area, block.position));
 
@@ -79,6 +107,8 @@ impl Renderer {
                     BlockType::Dirt => textures.dirt,
                     BlockType::Error => textures.error,
                     BlockType::Sand => textures.sand,
+                    BlockType::Mud => textures.mud,
+                    BlockType::Water => textures.water
                 },
                 block.position.x,
                 block.position.y,
@@ -90,30 +120,5 @@ impl Renderer {
             )
         }
 
-
-
-        // for x in (spawnable_area.x as i32..(spawnable_area.x + spawnable_area.w) as i32)
-        //     .step_by((self.blocksize) as usize)
-        // {
-        //     for y in (spawnable_area.y as i32..(spawnable_area.y + spawnable_area.h) as i32)
-        //         .step_by((self.blocksize) as usize)
-        //     {
-        //         draw_texture_ex(
-        //             match self.terrain_generator.get_block(vec2(x as f32, y as f32)){
-        //                 BlockType::Grass => textures.grass,
-        //                 BlockType::Dirt => textures.dirt,
-        //                 BlockType::Sand => textures.sand,
-        //                 BlockType::Error => textures.error,
-        //             },
-        //             x as f32,
-        //             y as f32,
-        //             GREEN,
-        //             DrawTextureParams {
-        //                 dest_size: Option::from(vec2(self.blocksize as f32, self.blocksize as f32)),
-        //                 ..Default::default()
-        //             },
-        //         )
-        //     }
-        // }
     }
 }

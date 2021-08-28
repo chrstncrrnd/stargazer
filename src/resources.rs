@@ -4,7 +4,9 @@ pub struct BlockResources {
     pub dirt: Texture2D,
     pub grass: Texture2D,
     pub sand: Texture2D,
+    pub mud: Texture2D,
     pub error: Texture2D,
+    pub water: Texture2D
 }
 
 impl BlockResources {
@@ -18,14 +20,22 @@ impl BlockResources {
         let sand = load_texture("assets/blocks/sand.png").await?;
         sand.set_filter(FilterMode::Nearest);
 
+        let mud = load_texture("assets/blocks/mud.png").await?;
+        mud.set_filter(FilterMode::Nearest);
+
         let error = load_texture("assets/blocks/error.png").await?;
         error.set_filter(FilterMode::Nearest);
+
+        let water = load_texture("assets/blocks/water.png").await?;
+        water.set_filter(FilterMode::Nearest);
 
         Ok(BlockResources {
             dirt,
             grass,
             sand,
+            mud,
             error,
+            water
         })
     }
 }

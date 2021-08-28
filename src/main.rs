@@ -5,14 +5,14 @@ use nodes::player::Player;
 use resources::Resources;
 
 use crate::scenes::planet_surface_scene::renderer::Renderer;
-use crate::world_generation::terrain::{AlphaTerrain, GrassOnly};
-use bracket_noise::prelude::{FastNoise, NoiseType};
+use crate::world_generation::terrain::{AlphaTerrain, GrassOnly, BetterTerrain};
 
 mod nodes;
 mod resources;
 mod scenes;
 mod world_generation;
 
+#[allow(dead_code)]
 //custom window config
 fn window_config() -> Conf {
     Conf {
@@ -42,8 +42,9 @@ async fn main() {
 
     let mut planet_surface = Renderer {
         blocks: Vec::new(),
-        blocksize: 40,
-        terrain_generator: Box::new(AlphaTerrain { noise: None }),
+        blocksize: 70,
+        terrain_generator: Box::new(BetterTerrain{noise:None}),
+        runner_step: 0
     };
 
     planet_surface.init();
