@@ -13,9 +13,6 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn init(&mut self) {
-        self.terrain_generator.init();
-    }
     fn round_to_nearest(initial_number: f32, multiple_of: i32) -> i32 {
         if initial_number as i32 % multiple_of == 0 {
             return initial_number as i32;
@@ -31,24 +28,22 @@ impl Renderer {
 
     fn is_in_render_area(render_area: &Rect, position: Vec2) -> bool {
         if position.x > render_area.x && position.x < render_area.x + render_area.w {
-            if position.y > render_area.y && position.y < render_area.y + render_area.h{
+            if position.y > render_area.y && position.y < render_area.y + render_area.h {
                 return true;
             }
         }
         return false;
     }
 
-
-
     pub fn render(&mut self, player: &Player, textures: &BlockResources) {
         //render the blocks
         let mut block_exists: bool;
 
         let render_area = Rect {
-            x: player.position.x - (screen_width() / 2.) - (100) as f32,
-            y: player.position.y - (screen_height() / 2.) - (100) as f32,
-            w: screen_width() + (200) as f32,
-            h: screen_height() + (200) as f32,
+            x: player.position.x - (screen_width() / 2.) - (150) as f32,
+            y: player.position.y - (screen_height() / 2.) - (150) as f32,
+            w: screen_width() + (300) as f32,
+            h: screen_height() + (300) as f32,
         };
 
         let spawnable_area = Rect {
@@ -83,13 +78,13 @@ impl Renderer {
                     for block in self.blocks.iter() {
                         if block.position == vec2(x as f32, y as f32) {
                             block_exists = true;
-                            break
+                            break;
                         }
                     }
                     if !block_exists {
                         self.blocks.push(Block {
                             position: vec2(x as f32, y as f32),
-                            block_type: self.terrain_generator.get_block(vec2(x as f32, y as f32))
+                            block_type: self.terrain_generator.get_block(vec2(x as f32, y as f32)),
                         })
                     }
                 }
@@ -98,17 +93,24 @@ impl Renderer {
         }
         self.runner_step += 1;
 
-        self.blocks.retain(|block| Renderer::is_in_render_area(&render_area, block.position));
+        self.blocks
+            .retain(|block| Renderer::is_in_render_area(&render_area, block.position));
 
         for block in self.blocks.iter() {
             draw_texture_ex(
                 match block.block_type {
-                    BlockType::Grass => textures.grass,
                     BlockType::Dirt => textures.dirt,
-                    BlockType::Error => textures.error,
+                    BlockType::Grass => textures.grass,
+                    BlockType::Ice => textures.ice,
+                    BlockType::Lava => textures.lava,
+                    BlockType::Leaves => textures.leaves,
                     BlockType::Sand => textures.sand,
-                    BlockType::Mud => textures.mud,
-                    BlockType::Water => textures.water
+                    BlockType::Snow => textures.snow,
+                    BlockType::Stone => textures.stone,
+                    BlockType::Water => textures.water,
+                    BlockType::WaterDeep => textures.water_deep,
+                    BlockType::WoodLog => textures.wood_log,
+                    BlockType::WoodPlanks => textures.wood_planks,
                 },
                 block.position.x,
                 block.position.y,
@@ -119,6 +121,5 @@ impl Renderer {
                 },
             )
         }
-
     }
 }

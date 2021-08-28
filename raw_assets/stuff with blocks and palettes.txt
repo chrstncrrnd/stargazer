@@ -1,0 +1,34 @@
+brown -dirt, mud
+
+yellow -sand
+green -grass, trees
+blue -water, ice
+orange -lava _-_-
+brown -wood _-_-
+white -snow _-_-
+grey -stone _-_-
+
+
+
+wood_color -wood
+wood palette
+https://coolors.co/ce984e-8e643a-5f4427-3c3226
+
+everything else
+https://coolors.co/8eb1c7-9fc86a-4d5359-b88100-a8d5e2-846c5b-265a27-646e78-e53d00-f17300
+
+
+blocks to make:
+grass
+tree-leaves
+wood planks
+dirt
+water
+deep water
+ice
+snow
+lava
+stone
+
+player-new
+

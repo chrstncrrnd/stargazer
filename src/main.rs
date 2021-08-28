@@ -5,7 +5,7 @@ use nodes::player::Player;
 use resources::Resources;
 
 use crate::scenes::planet_surface_scene::renderer::Renderer;
-use crate::world_generation::terrain::{AlphaTerrain, GrassOnly, BetterTerrain};
+use crate::world_generation::terrain::{AlphaTerrain, BetterTerrain, GrassOnly};
 
 mod nodes;
 mod resources;
@@ -42,12 +42,10 @@ async fn main() {
 
     let mut planet_surface = Renderer {
         blocks: Vec::new(),
-        blocksize: 70,
-        terrain_generator: Box::new(BetterTerrain{noise:None}),
-        runner_step: 0
+        blocksize: 50,
+        terrain_generator: Box::new(BetterTerrain::new()),
+        runner_step: 0,
     };
-
-    planet_surface.init();
 
     let mut main_camera = Camera::default();
 

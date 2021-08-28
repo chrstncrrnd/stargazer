@@ -3,10 +3,16 @@ use macroquad::prelude::*;
 pub struct BlockResources {
     pub dirt: Texture2D,
     pub grass: Texture2D,
+    pub ice: Texture2D,
+    pub lava: Texture2D,
+    pub leaves: Texture2D,
     pub sand: Texture2D,
-    pub mud: Texture2D,
-    pub error: Texture2D,
-    pub water: Texture2D
+    pub snow: Texture2D,
+    pub stone: Texture2D,
+    pub water: Texture2D,
+    pub water_deep: Texture2D,
+    pub wood_log: Texture2D,
+    pub wood_planks: Texture2D,
 }
 
 impl BlockResources {
@@ -17,25 +23,49 @@ impl BlockResources {
         let grass = load_texture("assets/blocks/grass.png").await?;
         grass.set_filter(FilterMode::Nearest);
 
+        let ice = load_texture("assets/blocks/sand.png").await?;
+        ice.set_filter(FilterMode::Nearest);
+
+        let lava = load_texture("assets/blocks/lava.png").await?;
+        lava.set_filter(FilterMode::Nearest);
+
+        let leaves = load_texture("assets/blocks/leaves.png").await?;
+        leaves.set_filter(FilterMode::Nearest);
+
         let sand = load_texture("assets/blocks/sand.png").await?;
         sand.set_filter(FilterMode::Nearest);
 
-        let mud = load_texture("assets/blocks/mud.png").await?;
-        mud.set_filter(FilterMode::Nearest);
+        let snow = load_texture("assets/blocks/snow.png").await?;
+        snow.set_filter(FilterMode::Nearest);
 
-        let error = load_texture("assets/blocks/error.png").await?;
-        error.set_filter(FilterMode::Nearest);
+        let stone = load_texture("assets/blocks/stone.png").await?;
+        stone.set_filter(FilterMode::Nearest);
 
         let water = load_texture("assets/blocks/water.png").await?;
         water.set_filter(FilterMode::Nearest);
 
+        let water_deep = load_texture("assets/blocks/water_deep.png").await?;
+        water_deep.set_filter(FilterMode::Nearest);
+
+        let wood_log = load_texture("assets/blocks/wood_log.png").await?;
+        wood_log.set_filter(FilterMode::Nearest);
+
+        let wood_planks = load_texture("assets/blocks/wood_planks.png").await?;
+        wood_planks.set_filter(FilterMode::Nearest);
+
         Ok(BlockResources {
             dirt,
             grass,
+            ice,
+            lava,
+            leaves,
             sand,
-            mud,
-            error,
-            water
+            snow,
+            stone,
+            water,
+            water_deep,
+            wood_log,
+            wood_planks,
         })
     }
 }
