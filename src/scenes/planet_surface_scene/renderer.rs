@@ -70,7 +70,6 @@ impl Renderer {
             let width = Self::round_to_nearest(render_area.w, BLOCK_SIZE as f32) as i32;
             let height = Self::round_to_nearest(render_area.h, BLOCK_SIZE as f32) as i32;
 
-            println!("Blocks len: {}", self.blocks.len());
 
             for x_coord in (x_pos..x_pos + width).step_by(BLOCK_SIZE) {
                 for y_coord in (y_pos..y_pos + height).step_by(BLOCK_SIZE) {

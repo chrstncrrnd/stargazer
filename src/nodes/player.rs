@@ -1,14 +1,14 @@
 use macroquad::prelude::*;
+use std::f32::consts::SQRT_2;
 
 pub struct Player {
-    pub texture: Texture2D,
-    pub width: f32,
-    pub height: f32,
-    pub name: String,
     pub position: Vec2,
-    pub player_speed: f32,
-    pub facing_left: bool,
-    pub name_font: Font,
+    texture: Texture2D,
+    width: f32,
+    height: f32,
+    name: String,
+    player_speed: f32,
+    facing_left: bool,
 }
 
 enum Direction {
@@ -16,9 +16,26 @@ enum Direction {
     Backwards,
     Left,
     Right,
+    BackwardsLeft,
+    BackwardsRight,
+    ForwardsLeft,
+    ForwardsRight,
 }
 
+
 impl Player {
+    pub fn new(texture: Texture2D, name: String) -> Self{
+        Self{
+            texture,
+            width: 50.0,
+            height: 50.0,
+            name,
+            position: vec2(screen_width()/2., screen_height()/2.),
+            player_speed: 5.0,
+            facing_left: true,
+        }
+    }
+
     //move the player
     fn move_player(&mut self, direction: Direction) {
         match direction {
@@ -26,26 +43,58 @@ impl Player {
             Direction::Backwards => self.position.y += self.player_speed,
             Direction::Left => self.position.x -= self.player_speed,
             Direction::Right => self.position.x += self.player_speed,
+            Direction::ForwardsLeft => {
+                self.position.y -= (self.player_speed / SQRT_2);
+                self.position.x -= (self.player_speed / SQRT_2);
+            },
+            Direction::ForwardsRight => {
+                self.position.x += (self.player_speed / SQRT_2);
+                self.position.y -= (self.player_speed / SQRT_2);
+            },
+            Direction::BackwardsLeft => {
+                self.position.x -= (self.player_speed / SQRT_2);
+                self.position.y += (self.player_speed / SQRT_2);
+            },
+            Direction::BackwardsRight => {
+                self.position.x += (self.player_speed / SQRT_2);
+                self.position.y += (self.player_speed / SQRT_2);
+            },
         }
     }
 
     pub fn render(&mut self, check_inputs: bool) {
         use Direction::*;
         if check_inputs {
-            //TODO: make the character be able to go sideways without it going so fast lol
             //move up
             if is_key_down(KeyCode::W) {
-                self.move_player(Forwards);
+                //
+                if is_key_down(KeyCode::A){
+                    self.move_player(ForwardsLeft)
+                } else if is_key_down(KeyCode::D) {
+                    self.move_player(ForwardsRight)
+                }
+                else{
+                    self.move_player(Forwards);
+                }
             }
             //move down
             else if is_key_down(KeyCode::S) {
-                self.move_player(Backwards);
+                if is_key_down(KeyCode::A){
+                    self.move_player(BackwardsLeft)
+                }else if is_key_down(KeyCode::D) {
+                    self.move_player(BackwardsRight)
+                }
+                else{
+                    self.move_player(Backwards);
+                }
             }
             //move left
             else if is_key_down(KeyCode::A) {
                 self.move_player(Left);
                 self.facing_left = true;
-            } else if is_key_down(KeyCode::D) {
+            }
+            //move right
+            else if is_key_down(KeyCode::D) {
                 self.move_player(Right);
                 self.facing_left = false;
             }
@@ -55,12 +104,12 @@ impl Player {
         draw_text_ex(
             self.name.as_str(),
             self.position.x
-                - (measure_text(self.name.as_str(), Option::from(self.name_font), 30, 1.0).width
+                - (measure_text(self.name.as_str(), None, 30, 1.0).width
                     - self.width)
                     / 2.0,
             self.position.y - 10.0,
             TextParams {
-                font: self.name_font,
+                font: Default::default(),
                 font_size: 30,
                 font_scale: 1.0,
                 font_scale_aspect: 1.0,

@@ -6,7 +6,7 @@ use bracket_noise::prelude::{FastNoise, NoiseType};
 use macroquad::math::Vec2;
 use std::thread::current;
 
-const SEED: u64 = 183921321;
+const SEED: u64 = 43892;
 
 #[allow(dead_code)]
 pub enum BlockType {
@@ -24,18 +24,21 @@ pub enum BlockType {
     WoodPlanks,
 }
 
+//i love traits
 pub trait TerrainGenerator {
     fn get_block(&self, position: Vec2) -> BlockType;
 }
-//i love traits
 
+// grass only terrain generator
 pub struct GrassOnly;
+
 impl TerrainGenerator for GrassOnly {
     fn get_block(&self, position: Vec2) -> BlockType {
         BlockType::Grass
     }
 }
 
+// Alpha terrain idk
 pub struct AlphaTerrain {
     pub noise: FastNoise,
 }

@@ -30,18 +30,9 @@ async fn main() {
     let game_resources: Resources = Resources::new().await.unwrap();
 
     //main character, you can also create other characters with this.
-    let mut player = Player {
-        texture: game_resources.player_texture,
-        width: 50.0,
-        height: 50.0,
-        name: "Chrstn".to_string(),
-        position: vec2(screen_width() / 2., screen_height() / 2.),
-        player_speed: 5.0,
-        facing_left: true,
-        name_font: game_resources.font,
-    };
+    let mut player = Player::new(game_resources.player_texture, "Chrstn".to_owned());
 
-    let mut planet_surface = Renderer::new(Box::new(BetterTerrain::new()));
+    let mut planet_surface = Renderer::new(Box::new(AlphaTerrain::new()));
 
     let mut camera =
         Camera2D::from_display_rect(Rect::new(0., 0., screen_width(), screen_height()));
