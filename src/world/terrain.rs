@@ -6,6 +6,8 @@ use bracket_noise::prelude::{FastNoise, NoiseType};
 use macroquad::math::Vec2;
 use std::thread::current;
 
+const SEED: u64 = 183921321;
+
 #[allow(dead_code)]
 pub enum BlockType {
     Dirt,
@@ -40,7 +42,7 @@ pub struct AlphaTerrain {
 
 impl AlphaTerrain {
     pub fn new() -> AlphaTerrain {
-        let mut noise = FastNoise::seeded(crate::world::seed::get_seed());
+        let mut noise = FastNoise::seeded(SEED);
         noise.set_noise_type(PerlinFractal);
         noise.set_frequency(2.);
         AlphaTerrain { noise }
@@ -66,17 +68,16 @@ pub struct BetterTerrain {
 
 impl BetterTerrain {
     pub fn new() -> BetterTerrain {
-        use crate::world::seed::get_seed;
 
-        let mut mountain_noise_cellular = FastNoise::seeded(get_seed());
+        let mut mountain_noise_cellular = FastNoise::seeded(SEED);
         mountain_noise_cellular.set_noise_type(NoiseType::Cubic);
         mountain_noise_cellular.set_frequency(0.001);
 
-        let mut land_or_sea_perlin = FastNoise::seeded(get_seed());
+        let mut land_or_sea_perlin = FastNoise::seeded(SEED);
         land_or_sea_perlin.set_noise_type(NoiseType::Perlin);
         land_or_sea_perlin.set_frequency(0.5);
 
-        let mut tree_perlin = FastNoise::seeded(get_seed());
+        let mut tree_perlin = FastNoise::seeded(SEED);
         tree_perlin.set_noise_type(NoiseType::Perlin);
         tree_perlin.set_frequency(5.);
         BetterTerrain {

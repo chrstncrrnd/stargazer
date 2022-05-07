@@ -1,2 +1,2 @@
-pub mod seed;
 pub mod terrain;
+pub mod block;

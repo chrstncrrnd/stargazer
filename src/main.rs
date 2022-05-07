@@ -1,3 +1,4 @@
+use std::fmt::format;
 use macroquad::prelude::*;
 
 use nodes::player::Player;
@@ -53,6 +54,8 @@ async fn main() {
         player.render(true);
         camera.target = player.position;
         set_camera(&camera);
+
+        draw_text(format!("XY: {}, {}", player.position.x, player.position.y).as_str(), player.position.x - 100_f32, player.position.y - 100_f32, 60.0, WHITE);
         next_frame().await;
     }
 }

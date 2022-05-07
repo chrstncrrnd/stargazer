@@ -1,6 +1,6 @@
 use crate::nodes::player::Player;
 use crate::resources::BlockResources;
-use crate::scenes::planet_surface_scene::block::Block;
+use crate::world::block::Block;
 use crate::world::terrain::BlockType;
 use crate::world::terrain::TerrainGenerator;
 use macroquad::prelude::*;
@@ -48,7 +48,7 @@ impl Renderer {
 
     fn round_to_nearest(mut number: f32, nearest: f32) -> f32 {
         if (number % nearest) >= nearest / 2_f32 {
-            number = number + (number % nearest)
+            number = number + (nearest - (number % nearest))
         } else {
             number = number - (number % nearest)
         }
@@ -56,7 +56,6 @@ impl Renderer {
     }
 
     pub fn render(&mut self, player: &Player, textures: &BlockResources) {
-        //too many safe casts
 
         let render_area = Rect {
             x: player.position.x - (screen_width() / 2.) - 150_f32,
