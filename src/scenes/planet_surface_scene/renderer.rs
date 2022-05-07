@@ -1,31 +1,42 @@
 use crate::nodes::player::Player;
 use crate::resources::BlockResources;
 use crate::scenes::planet_surface_scene::block::Block;
-use crate::world_generation::terrain::BlockType;
-use crate::world_generation::terrain::TerrainGenerator;
+use crate::world::terrain::BlockType;
+use crate::world::terrain::TerrainGenerator;
 use macroquad::prelude::*;
 
+const BLOCK_SIZE: usize = 50;
+
 pub struct Renderer {
-    pub blocks: Vec<Block>,
-    pub blocksize: i32,
-    pub terrain_generator: Box<dyn TerrainGenerator>,
-    pub runner_step: u8,
+    blocks: Vec<Block>,
+    terrain_generator: Box<dyn TerrainGenerator>,
+    prev_render_area: Rect,
 }
 
 impl Renderer {
-    fn round_to_nearest(initial_number: f32, multiple_of: i32) -> i32 {
-        if initial_number as i32 % multiple_of == 0 {
-            return initial_number as i32;
+    pub fn new(terrain_generator: Box<dyn TerrainGenerator>) -> Self {
+        Self {
+            blocks: Vec::new(),
+            terrain_generator,
+            prev_render_area: Rect::new(0., 0., 0., 0.),
         }
-
-        for i in initial_number as i32.. {
-            if i % multiple_of == 0 {
-                return i;
-            }
-        }
-        initial_number as i32
     }
 
+    fn add_block_if_not_there(&mut self, block1: Block) {
+        for block in self.blocks.iter() {
+            if block.position == block1.position {
+                return;
+            }
+        }
+        self.blocks.push(block1);
+    }
+
+    #[inline]
+    fn i32_vec2(x: i32, y: i32) -> Vec2 {
+        return vec2(x as f32, y as f32);
+    }
+
+    #[inline]
     fn is_in_render_area(render_area: &Rect, position: Vec2) -> bool {
         if position.x > render_area.x && position.x < render_area.x + render_area.w {
             if position.y > render_area.y && position.y < render_area.y + render_area.h {
@@ -35,66 +46,47 @@ impl Renderer {
         return false;
     }
 
+    fn round_to_nearest(mut number: f32, nearest: f32) -> f32 {
+        if (number % nearest) >= nearest / 2_f32 {
+            number = number + (number % nearest)
+        } else {
+            number = number - (number % nearest)
+        }
+        number
+    }
+
     pub fn render(&mut self, player: &Player, textures: &BlockResources) {
-        //render the blocks
-        let mut block_exists: bool;
+        //too many safe casts
 
         let render_area = Rect {
-            x: player.position.x - (screen_width() / 2.) - (150) as f32,
-            y: player.position.y - (screen_height() / 2.) - (150) as f32,
-            w: screen_width() + (300) as f32,
-            h: screen_height() + (300) as f32,
+            x: player.position.x - (screen_width() / 2.) - 150_f32,
+            y: player.position.y - (screen_height() / 2.) - 150_f32,
+            w: screen_width() + 300_f32,
+            h: screen_height() + 300_f32,
         };
 
-        let spawnable_area = Rect {
-            x: Self::round_to_nearest(render_area.x, self.blocksize) as f32,
-            y: Self::round_to_nearest(render_area.y, self.blocksize) as f32,
-            w: Self::round_to_nearest(render_area.w, self.blocksize) as f32,
-            h: Self::round_to_nearest(render_area.h, self.blocksize) as f32,
-        };
+        if !(self.prev_render_area == render_area) {
+            let x_pos = Self::round_to_nearest(render_area.x, BLOCK_SIZE as f32) as i32;
+            let y_pos = Self::round_to_nearest(render_area.y, BLOCK_SIZE as f32) as i32;
+            let width = Self::round_to_nearest(render_area.w, BLOCK_SIZE as f32) as i32;
+            let height = Self::round_to_nearest(render_area.h, BLOCK_SIZE as f32) as i32;
 
-        if self.blocks.is_empty() {
-            for x in (spawnable_area.x as i32..(spawnable_area.x + spawnable_area.w) as i32)
-                .step_by((self.blocksize) as usize)
-            {
-                for y in (spawnable_area.y as i32..(spawnable_area.y + spawnable_area.h) as i32)
-                    .step_by((self.blocksize) as usize)
-                {
-                    self.blocks.push(Block {
-                        position: vec2(x as f32, y as f32),
-                        block_type: self.terrain_generator.get_block(vec2(x as f32, y as f32)),
-                    })
+            println!("Blocks len: {}", self.blocks.len());
+
+            for x_coord in (x_pos..x_pos + width).step_by(BLOCK_SIZE) {
+                for y_coord in (y_pos..y_pos + height).step_by(BLOCK_SIZE) {
+                    self.add_block_if_not_there(Block::new(
+                        Self::i32_vec2(x_coord, y_coord),
+                        self.terrain_generator.get_block(Self::i32_vec2(x_coord, y_coord)),
+                    ));
                 }
             }
         }
-        if self.runner_step == 5 {
-            for x in (spawnable_area.x as i32..(spawnable_area.x + spawnable_area.w) as i32)
-                .step_by((self.blocksize) as usize)
-            {
-                for y in (spawnable_area.y as i32..(spawnable_area.y + spawnable_area.h) as i32)
-                    .step_by((self.blocksize) as usize)
-                {
-                    block_exists = false;
-                    for block in self.blocks.iter() {
-                        if block.position == vec2(x as f32, y as f32) {
-                            block_exists = true;
-                            break;
-                        }
-                    }
-                    if !block_exists {
-                        self.blocks.push(Block {
-                            position: vec2(x as f32, y as f32),
-                            block_type: self.terrain_generator.get_block(vec2(x as f32, y as f32)),
-                        })
-                    }
-                }
-            }
-            self.runner_step = 0;
-        }
-        self.runner_step += 1;
 
         self.blocks
-            .retain(|block| Renderer::is_in_render_area(&render_area, block.position));
+            .retain(|block| Self::is_in_render_area(&render_area, block.position));
+
+        self.prev_render_area = render_area;
 
         for block in self.blocks.iter() {
             draw_texture_ex(
@@ -116,10 +108,15 @@ impl Renderer {
                 block.position.y,
                 WHITE,
                 DrawTextureParams {
-                    dest_size: Option::from(vec2(self.blocksize as f32, self.blocksize as f32)),
+                    dest_size: Option::from(vec2(BLOCK_SIZE as f32, BLOCK_SIZE as f32)),
                     ..Default::default()
                 },
             )
         }
     }
+
+    // self.blocks
+    //     .retain(|block| Renderer::is_in_render_area(&render_area, block.position));
+
+    // }
 }
