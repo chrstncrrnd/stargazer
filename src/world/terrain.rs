@@ -1,10 +1,7 @@
-use crate::world::terrain::BlockType::{
-    Dirt, Grass, Leaves, Sand, Snow, Stone, Water, WaterDeep,
-};
+use crate::world::terrain::BlockType::*;
 use bracket_noise::prelude::NoiseType::PerlinFractal;
 use bracket_noise::prelude::{FastNoise, NoiseType};
 use macroquad::math::Vec2;
-use std::thread::current;
 
 const SEED: u64 = 43892;
 
@@ -118,15 +115,14 @@ impl TerrainGenerator for BetterTerrain {
                 let tree_noise = self
                     .tree_perlin
                     .get_noise(position.x / 3000., position.y / 3000.);
-                if tree_noise < 0. {
+                return if tree_noise < 0. {
                     //tree
-                    return Leaves;
+                    Leaves
                 } else {
                     //not a tree
-                    return Grass;
+                    Grass
                 }
             }
         }
-        Dirt
     }
 }

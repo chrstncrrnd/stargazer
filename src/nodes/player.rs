@@ -1,5 +1,4 @@
 use macroquad::prelude::*;
-use std::f32::consts::SQRT_2;
 
 pub struct Player {
     pub position: Vec2,
@@ -11,17 +10,6 @@ pub struct Player {
     facing_left: bool,
 }
 
-enum Direction {
-    Forwards,
-    Backwards,
-    Left,
-    Right,
-    BackwardsLeft,
-    BackwardsRight,
-    ForwardsLeft,
-    ForwardsRight,
-}
-
 
 impl Player {
     pub fn new(texture: Texture2D, name: String) -> Self{
@@ -31,74 +19,35 @@ impl Player {
             height: 50.0,
             name,
             position: vec2(screen_width()/2., screen_height()/2.),
-            player_speed: 5.0,
+            player_speed: 100.0,
             facing_left: true,
         }
     }
 
-    //move the player
-    fn move_player(&mut self, direction: Direction) {
-        match direction {
-            Direction::Forwards => self.position.y -= self.player_speed,
-            Direction::Backwards => self.position.y += self.player_speed,
-            Direction::Left => self.position.x -= self.player_speed,
-            Direction::Right => self.position.x += self.player_speed,
-            Direction::ForwardsLeft => {
-                self.position.y -= (self.player_speed / SQRT_2);
-                self.position.x -= (self.player_speed / SQRT_2);
-            },
-            Direction::ForwardsRight => {
-                self.position.x += (self.player_speed / SQRT_2);
-                self.position.y -= (self.player_speed / SQRT_2);
-            },
-            Direction::BackwardsLeft => {
-                self.position.x -= (self.player_speed / SQRT_2);
-                self.position.y += (self.player_speed / SQRT_2);
-            },
-            Direction::BackwardsRight => {
-                self.position.x += (self.player_speed / SQRT_2);
-                self.position.y += (self.player_speed / SQRT_2);
-            },
-        }
-    }
+    pub fn render(&mut self) {
+        let speed = self.player_speed * get_frame_time();
 
-    pub fn render(&mut self, check_inputs: bool) {
-        use Direction::*;
-        if check_inputs {
-            //move up
-            if is_key_down(KeyCode::W) {
-                //
-                if is_key_down(KeyCode::A){
-                    self.move_player(ForwardsLeft)
-                } else if is_key_down(KeyCode::D) {
-                    self.move_player(ForwardsRight)
-                }
-                else{
-                    self.move_player(Forwards);
-                }
-            }
-            //move down
-            else if is_key_down(KeyCode::S) {
-                if is_key_down(KeyCode::A){
-                    self.move_player(BackwardsLeft)
-                }else if is_key_down(KeyCode::D) {
-                    self.move_player(BackwardsRight)
-                }
-                else{
-                    self.move_player(Backwards);
-                }
-            }
-            //move left
-            else if is_key_down(KeyCode::A) {
-                self.move_player(Left);
-                self.facing_left = true;
-            }
-            //move right
-            else if is_key_down(KeyCode::D) {
-                self.move_player(Right);
-                self.facing_left = false;
-            }
+        //[w,a,s,d]
+        let mut speeds: [f32; 4] = [0.; 4];
+
+        if is_key_down(KeyCode::W){
+            speeds[0] = speed;
         }
+        if is_key_down(KeyCode::A){
+            speeds[1] = speed;
+        }
+        if is_key_down(KeyCode::S){
+            speeds[2] = speed;
+        }
+        if is_key_down(KeyCode::D){
+            speeds[3] = speed;
+        }
+
+        self.position.y -= speeds[0];
+        self.position.x -= speeds[1];
+        self.position.y += speeds[2];
+        self.position.x += speeds[3];
+
 
         //render the player name
         draw_text_ex(

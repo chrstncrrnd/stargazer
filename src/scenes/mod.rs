@@ -1,1 +1,1 @@
-pub mod planet_surface_scene;
+pub mod planet_surface;

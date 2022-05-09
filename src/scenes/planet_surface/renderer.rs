@@ -4,6 +4,7 @@ use crate::world::block::Block;
 use crate::world::terrain::BlockType;
 use crate::world::terrain::TerrainGenerator;
 use macroquad::prelude::*;
+use std::f32::consts::FRAC_2_PI;
 
 const BLOCK_SIZE: usize = 50;
 
@@ -38,12 +39,7 @@ impl Renderer {
 
     #[inline]
     fn is_in_render_area(render_area: &Rect, position: Vec2) -> bool {
-        if position.x > render_area.x && position.x < render_area.x + render_area.w {
-            if position.y > render_area.y && position.y < render_area.y + render_area.h {
-                return true;
-            }
-        }
-        return false;
+        position.x > render_area.x && position.x < render_area.x + render_area.w && position.y > render_area.y && position.y < render_area.y + render_area.h
     }
 
     fn round_to_nearest(mut number: f32, nearest: f32) -> f32 {
@@ -107,14 +103,11 @@ impl Renderer {
                 WHITE,
                 DrawTextureParams {
                     dest_size: Option::from(vec2(BLOCK_SIZE as f32, BLOCK_SIZE as f32)),
+                    rotation: (block.position.y % block.position.x) % FRAC_2_PI,
                     ..Default::default()
                 },
             )
         }
     }
 
-    // self.blocks
-    //     .retain(|block| Renderer::is_in_render_area(&render_area, block.position));
-
-    // }
 }
