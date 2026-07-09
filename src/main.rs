@@ -1,4 +1,3 @@
-use std::process::exit;
 use macroquad::prelude::*;
 
 use nodes::player::Player;

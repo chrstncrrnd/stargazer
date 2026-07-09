@@ -26,20 +26,23 @@ pub trait TerrainGenerator {
     fn get_block(&self, position: Vec2) -> BlockType;
 }
 
+#[allow(dead_code)]
 // grass only terrain generator
 pub struct GrassOnly;
 
 impl TerrainGenerator for GrassOnly {
-    fn get_block(&self, position: Vec2) -> BlockType {
+    fn get_block(&self, _position: Vec2) -> BlockType {
         BlockType::Grass
     }
 }
 
+#[allow(dead_code)]
 // Alpha terrain idk
 pub struct AlphaTerrain {
     pub noise: FastNoise,
 }
 
+#[allow(dead_code)]
 impl AlphaTerrain {
     pub fn new() -> AlphaTerrain {
         let mut noise = FastNoise::seeded(SEED);
@@ -53,9 +56,9 @@ impl TerrainGenerator for AlphaTerrain {
     fn get_block(&self, position: Vec2) -> BlockType {
         let current_noise = self.noise.get_noise(position.x / 3000., position.y / 3000.);
         if current_noise < 0.0 {
-            return BlockType::Grass;
+            BlockType::Grass
         } else {
-            return BlockType::Dirt;
+            BlockType::Dirt
         }
     }
 }
@@ -95,9 +98,9 @@ impl TerrainGenerator for BetterTerrain {
             .get_noise(position.x / 3000., position.y / 3000.);
         if land_or_sea < -0.1 {
             //its water
-            return Water;
+            Water
         } else if land_or_sea < -0.07 {
-            return Sand;
+            Sand
         } else {
             //its land
             //generate some mountains :sungalasses:
@@ -106,16 +109,16 @@ impl TerrainGenerator for BetterTerrain {
                 .get_noise(position.x, position.y);
             if mountain_noise < -0.5 {
                 //snowy
-                return Snow;
+                Snow
             } else if mountain_noise < 0.2 {
                 //its a mountain
-                return Stone;
+                Stone
             } else {
                 //its not a mountain
                 let tree_noise = self
                     .tree_perlin
                     .get_noise(position.x / 3000., position.y / 3000.);
-                return if tree_noise < 0. {
+                if tree_noise < 0. {
                     //tree
                     Leaves
                 } else {
