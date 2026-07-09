@@ -71,19 +71,7 @@ impl Player {
             },
         );
 
-        draw_text_ex(
-            self.name.as_str(),
-            0.0,
-            0.0,
-            TextParams {
-                font: Some(&self.font),
-                font_size: 30,
-                font_scale: 1.0,
-                font_scale_aspect: 1.0,
-                rotation: 0.0,
-                color: BLACK,
-            },
-        );
+
 
         draw_texture_ex(
             &self.texture,

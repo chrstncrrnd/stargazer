@@ -34,19 +34,23 @@ async fn main() {
 
     let mut planet_surface = Renderer::new(Box::new(BetterTerrain::new()));
 
-    let mut camera =
-        Camera2D::from_display_rect(Rect::new(0., 0., screen_width(), screen_height()));
+    let mut camera = Camera2D {
+        target: player.position,
+        zoom: vec2(2. / screen_width(), 2. / screen_height()),
+        ..Default::default()
+    };
 
 
     //main game loop
     loop {
         clear_background(WHITE);
+        camera.target = player.position;
+        camera.zoom = vec2(2. / screen_width(), 2. / screen_height());
+        set_camera(&camera);
         planet_surface.render(&player, &game_resources.block_resources);
         player.render();
-        camera.target = player.position;
-        set_camera(&camera);
-        draw_text(get_fps().to_string().as_str(), player.position.x - 100_f32, player.position.y - 200_f32, 20., WHITE);
-        draw_text(format!("XY: {}, {}", player.position.x, player.position.y).as_str(), player.position.x - 100_f32, player.position.y - 100_f32, 60.0, WHITE);
+        draw_text(get_fps().to_string().as_str(), player.position.x - 100_f32, player.position.y - 200_f32, 20., BLACK);
+        draw_text(format!("XY: {}, {}", player.position.x, player.position.y).as_str(), player.position.x - 100_f32, player.position.y - 100_f32, 60.0, BLACK);
         if is_key_down(KeyCode::Escape){
             break;
         }
@@ -54,3 +58,5 @@ async fn main() {
         next_frame().await;
     }
 }
+
+
