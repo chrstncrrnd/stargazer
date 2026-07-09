@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use macroquad::prelude::*;
 
 pub struct Player {
@@ -55,21 +57,36 @@ impl Player {
         draw_text_ex(
             self.name.as_str(),
             self.position.x
-                - (measure_text(self.name.as_str(), None, 30, 1.0).width
+                - (measure_text(self.name.as_str(), Some(&self.font), 30, 1.0).width
                     - self.width)
                     / 2.0,
             self.position.y - 10.0,
             TextParams {
-                font: self.font,
+                font: Some(&self.font),
                 font_size: 30,
                 font_scale: 1.0,
                 font_scale_aspect: 1.0,
+                rotation: 0.0,
+                color: BLACK,
+            },
+        );
+
+        draw_text_ex(
+            self.name.as_str(),
+            0.0,
+            0.0,
+            TextParams {
+                font: Some(&self.font),
+                font_size: 30,
+                font_scale: 1.0,
+                font_scale_aspect: 1.0,
+                rotation: 0.0,
                 color: BLACK,
             },
         );
 
         draw_texture_ex(
-            self.texture,
+            &self.texture,
             self.position.x,
             self.position.y,
             WHITE,

@@ -4,7 +4,6 @@ use crate::world::block::Block;
 use crate::world::terrain::BlockType;
 use crate::world::terrain::TerrainGenerator;
 use macroquad::prelude::*;
-use std::f32::consts::FRAC_2_PI;
 
 const BLOCK_SIZE: usize = 50;
 
@@ -34,7 +33,7 @@ impl Renderer {
 
     #[inline]
     fn i32_vec2(x: i32, y: i32) -> Vec2 {
-        return vec2(x as f32, y as f32);
+        vec2(x as f32, y as f32)
     }
 
     #[inline]
@@ -85,25 +84,25 @@ impl Renderer {
         for block in self.blocks.iter() {
             draw_texture_ex(
                 match block.block_type {
-                    BlockType::Dirt => textures.dirt,
-                    BlockType::Grass => textures.grass,
-                    BlockType::Ice => textures.ice,
-                    BlockType::Lava => textures.lava,
-                    BlockType::Leaves => textures.leaves,
-                    BlockType::Sand => textures.sand,
-                    BlockType::Snow => textures.snow,
-                    BlockType::Stone => textures.stone,
-                    BlockType::Water => textures.water,
-                    BlockType::WaterDeep => textures.water_deep,
-                    BlockType::WoodLog => textures.wood_log,
-                    BlockType::WoodPlanks => textures.wood_planks,
+                    BlockType::Dirt => &textures.dirt,
+                    BlockType::Grass => &textures.grass,
+                    BlockType::Ice => &textures.ice,
+                    BlockType::Lava => &textures.lava,
+                    BlockType::Leaves => &textures.leaves,
+                    BlockType::Sand => &textures.sand,
+                    BlockType::Snow => &textures.snow,
+                    BlockType::Stone => &textures.stone,
+                    BlockType::Water => &textures.water,
+                    BlockType::WaterDeep => &textures.water_deep,
+                    BlockType::WoodLog => &textures.wood_log,
+                    BlockType::WoodPlanks => &textures.wood_planks,
                 },
                 block.position.x,
                 block.position.y,
                 WHITE,
                 DrawTextureParams {
                     dest_size: Option::from(vec2(BLOCK_SIZE as f32, BLOCK_SIZE as f32)),
-                    rotation: (block.position.y % block.position.x) % FRAC_2_PI,
+                    rotation: 0.0,
                     ..Default::default()
                 },
             )

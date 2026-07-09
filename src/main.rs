@@ -48,7 +48,7 @@ async fn main() {
         draw_text(get_fps().to_string().as_str(), player.position.x - 100_f32, player.position.y - 200_f32, 20., WHITE);
         draw_text(format!("XY: {}, {}", player.position.x, player.position.y).as_str(), player.position.x - 100_f32, player.position.y - 100_f32, 60.0, WHITE);
         if is_key_down(KeyCode::Escape){
-            exit(0);
+            break;
         }
 
         next_frame().await;

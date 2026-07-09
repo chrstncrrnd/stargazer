@@ -1,5 +1,4 @@
-use macroquad::prelude::*;
-use crate::miniquad::log;
+use macroquad::{miniquad::fs, prelude::*};
 
 pub struct BlockResources {
     pub dirt: Texture2D,
@@ -22,7 +21,7 @@ macro_rules! load_blocks {
         $(
             let var_name_str = stringify!($var_name);
             let path = format!("assets/blocks/{}.png", var_name_str);
-            let $var_name = macroquad::prelude::load_texture(path.as_str()).await.unwrap_or(default);
+            let $var_name = macroquad::prelude::load_texture(path.as_str()).await.unwrap_or(default.clone());
             $var_name.set_filter(macroquad::prelude::FilterMode::Nearest);
         )+
     };
@@ -40,7 +39,7 @@ macro_rules! load {
 }
 
 impl BlockResources {
-    pub async fn load() -> Result<BlockResources, FileError> {
+    pub async fn load() -> Result<BlockResources, fs::Error> {
         info!("Loading resources...");
 
         load_blocks!(dirt, grass, ice, lava, leaves, sand, snow, stone, water, water_deep, wood_log, wood_planks);
@@ -71,7 +70,7 @@ pub struct Resources {
 }
 
 impl Resources {
-    pub async fn load() -> Result<Resources, FileError> {
+    pub async fn load() -> Result<Resources, fs::Error> {
         load!(player_texture);
 
         let font = load_ttf_font("assets/Font.ttf").await.unwrap();

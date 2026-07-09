@@ -1,10 +1,10 @@
 [package]
 name = "stargazer"
 version = "0.1.0"
-edition = "2018"
+edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-macroquad = "0.3.16"
-bracket-noise = "0.8.2"
+macroquad = "0.4.15"
+bracket-noise = "0.8.7"
