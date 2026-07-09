@@ -8,11 +8,12 @@ pub struct Player {
     name: String,
     player_speed: f32,
     facing_left: bool,
+    font: Font
 }
 
 
 impl Player {
-    pub fn new(texture: Texture2D, name: String) -> Self{
+    pub fn new(texture: Texture2D, name: String, font: Font) -> Self{
         Self{
             texture,
             width: 50.0,
@@ -21,6 +22,7 @@ impl Player {
             position: vec2(screen_width()/2., screen_height()/2.),
             player_speed: 100.0,
             facing_left: true,
+            font
         }
     }
 
@@ -58,7 +60,7 @@ impl Player {
                     / 2.0,
             self.position.y - 10.0,
             TextParams {
-                font: Default::default(),
+                font: self.font,
                 font_size: 30,
                 font_scale: 1.0,
                 font_scale_aspect: 1.0,

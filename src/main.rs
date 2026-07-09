@@ -30,7 +30,7 @@ async fn main() {
     let game_resources: Resources = Resources::load().await.unwrap();
 
     //main character, you can also create other characters with this.
-    let mut player = Player::new(game_resources.player_texture, "Chrstn".to_owned());
+    let mut player = Player::new(game_resources.player_texture, "Chrstn".to_owned(), game_resources.font);
 
     let mut planet_surface = Renderer::new(Box::new(BetterTerrain::new()));
 
