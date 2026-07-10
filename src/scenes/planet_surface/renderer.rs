@@ -68,10 +68,9 @@ impl Renderer {
 
             for x_coord in (x_pos..x_pos + width).step_by(BLOCK_SIZE) {
                 for y_coord in (y_pos..y_pos + height).step_by(BLOCK_SIZE) {
-                    self.add_block_if_not_there(Block::new(
-                        Self::i32_vec2(x_coord, y_coord),
+                    self.add_block_if_not_there(
                         self.terrain_generator.get_block(Self::i32_vec2(x_coord, y_coord)),
-                    ));
+                    );
                 }
             }
         }

@@ -4,7 +4,7 @@ use nodes::player::Player;
 use resources::Resources;
 
 use crate::scenes::planet_surface::renderer::Renderer;
-use crate::world::terrain::{BetterTerrain};
+use crate::world::terrain::{AlphaTerrain, BetterTerrain};
 
 mod nodes;
 mod resources;

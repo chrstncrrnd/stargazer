@@ -1,4 +1,6 @@
 use crate::world::terrain::BlockType::*;
+use crate::world::block::Block;
+
 use bracket_noise::prelude::NoiseType::PerlinFractal;
 use bracket_noise::prelude::{FastNoise, NoiseType};
 use macroquad::math::Vec2;
@@ -23,7 +25,9 @@ pub enum BlockType {
 
 //i love traits
 pub trait TerrainGenerator {
-    fn get_block(&self, position: Vec2) -> BlockType;
+    fn get_block(&self, position: Vec2) -> Block;
+    fn get_block_type(&self, position: Vec2) -> BlockType;
+    fn get_block_shadow(&self, position: Vec2) -> u8;
 }
 
 #[allow(dead_code)]
@@ -31,7 +35,13 @@ pub trait TerrainGenerator {
 pub struct GrassOnly;
 
 impl TerrainGenerator for GrassOnly {
-    fn get_block(&self, _position: Vec2) -> BlockType {
+    fn get_block(&self, position: Vec2) -> Block {
+        Block::new(position, self.get_block_type(position), self.get_block_shadow(position))
+    }
+    fn get_block_shadow(&self, position: Vec2) -> u8 {
+        0
+    }
+    fn get_block_type(&self, _position: Vec2) -> BlockType {
         BlockType::Grass
     }
 }
@@ -53,13 +63,21 @@ impl AlphaTerrain {
 }
 
 impl TerrainGenerator for AlphaTerrain {
-    fn get_block(&self, position: Vec2) -> BlockType {
+    fn get_block_type(&self, position: Vec2) -> BlockType {
         let current_noise = self.noise.get_noise(position.x / 3000., position.y / 3000.);
         if current_noise < 0.0 {
             BlockType::Grass
         } else {
             BlockType::Dirt
         }
+    }
+
+    fn get_block_shadow(&self, position: Vec2) -> u8 {
+        0
+    }
+
+    fn get_block(&self, position: Vec2) -> Block {
+        Block::new(position, self.get_block_type(position), self.get_block_shadow(position))
     }
 }
 
@@ -92,7 +110,7 @@ impl BetterTerrain {
 }
 
 impl TerrainGenerator for BetterTerrain {
-    fn get_block(&self, position: Vec2) -> BlockType {
+    fn get_block_type(&self, position: Vec2) -> BlockType {
         let land_or_sea = self
             .land_or_sea_perlin
             .get_noise(position.x / 3000., position.y / 3000.);
@@ -127,5 +145,12 @@ impl TerrainGenerator for BetterTerrain {
                 }
             }
         }
+    }
+
+    fn get_block_shadow(&self, position: Vec2) -> u8 {
+        0
+    }
+    fn get_block(&self, position: Vec2) -> Block{
+        Block::new(position, self.get_block_type(position), self.get_block_shadow(position))
     }
 }

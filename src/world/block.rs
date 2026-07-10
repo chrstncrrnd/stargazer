@@ -4,13 +4,15 @@ use macroquad::math::Vec2;
 pub struct Block {
     pub position: Vec2,
     pub block_type: BlockType,
+    pub shadow: u8,
 }
 
 impl Block {
-    pub fn new(position: Vec2, block_type: BlockType) -> Self {
+    pub fn new(position: Vec2, block_type: BlockType, shadow: u8) -> Self {
         Self {
             position,
             block_type,
+            shadow,
         }
     }
 }
