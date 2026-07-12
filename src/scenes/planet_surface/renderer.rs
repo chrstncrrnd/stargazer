@@ -3,6 +3,9 @@ use crate::resources::BlockResources;
 use crate::world::block::Block;
 use crate::world::terrain::BlockType;
 use crate::world::terrain::TerrainGenerator;
+use crate::utils::i32_vec2;
+
+
 use macroquad::prelude::*;
 
 const BLOCK_SIZE: usize = 50;
@@ -31,10 +34,6 @@ impl Renderer {
         self.blocks.push(block1);
     }
 
-    #[inline]
-    fn i32_vec2(x: i32, y: i32) -> Vec2 {
-        vec2(x as f32, y as f32)
-    }
 
     #[inline]
     fn is_in_render_area(render_area: &Rect, position: Vec2) -> bool {
@@ -71,7 +70,7 @@ impl Renderer {
                 for y_coord in (y_pos..y_pos + height).step_by(BLOCK_SIZE) {
                     self.add_block_if_not_there(
                         self.terrain_generator
-                            .get_block(Self::i32_vec2(x_coord, y_coord)),
+                            .get_block(i32_vec2(x_coord, y_coord)),
                     );
                 }
             }

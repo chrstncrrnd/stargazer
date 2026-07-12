@@ -6,6 +6,7 @@ use resources::Resources;
 use crate::scenes::planet_surface::renderer::Renderer;
 use crate::world::new_terrain::NewTerrain;
 
+mod utils;
 mod nodes;
 mod resources;
 mod scenes;
@@ -15,9 +16,9 @@ mod world;
 //custom window config
 fn window_config() -> Conf {
     Conf {
-        fullscreen: true,
-        window_height: 1080,
-        window_width: 1920,
+        fullscreen: false,
+        window_width: 720,
+        window_height: 400,
         window_resizable: false,
         window_title: String::from("Stargazers"),
         ..Default::default()
@@ -39,7 +40,7 @@ async fn main() {
 
     let mut camera = Camera2D {
         target: player.position,
-        zoom: vec2(2. / screen_width(), 2. / screen_height()),
+        zoom: vec2(1. / screen_width(), 1. / screen_height()),
         ..Default::default()
     };
 
@@ -47,24 +48,24 @@ async fn main() {
     loop {
         clear_background(WHITE);
         camera.target = player.position;
-        camera.zoom = vec2(2. / screen_width(), 2. / screen_height());
+        // camera.zoom = vec2(2. / screen_width(), 2. / screen_height());
         set_camera(&camera);
         planet_surface.render(&player, &game_resources.block_resources);
         player.render();
-        draw_text(
-            get_fps().to_string().as_str(),
-            player.position.x - 100_f32,
-            player.position.y - 200_f32,
-            20.,
-            BLACK,
-        );
-        draw_text(
-            format!("XY: {}, {}", player.position.x, player.position.y).as_str(),
-            player.position.x - 100_f32,
-            player.position.y - 100_f32,
-            60.0,
-            BLACK,
-        );
+        // draw_text(
+        //     get_fps().to_string().as_str(),
+        //     player.position.x - 100_f32,
+        //     player.position.y - 200_f32,
+        //     20.,
+        //     BLACK,
+        // );
+        // draw_text(
+        //     format!("XY: {}, {}", player.position.x, player.position.y).as_str(),
+        //     player.position.x - 100_f32,
+        //     player.position.y - 100_f32,
+        //     60.0,
+        //     BLACK,
+        // );
         if is_key_down(KeyCode::Escape) {
             break;
         }
