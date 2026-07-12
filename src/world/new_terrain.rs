@@ -1,106 +1,23 @@
-use crate::world::block::Block;
-use crate::world::terrain::BlockType::*;
-
-use bracket_noise::prelude::NoiseType::PerlinFractal;
-use bracket_noise::prelude::{FastNoise, NoiseType};
+use bracket_noise::prelude::FastNoise;
+use bracket_noise::prelude::NoiseType;
 use macroquad::math::Vec2;
 
-pub const SEED: u64 = 43892;
-pub const NOISE_SCALING_FACTOR: f32 = 3000.0;
+use crate::world::block::Block;
+use crate::world::terrain::BlockType;
+use crate::world::terrain::BlockType::*;
+use crate::world::terrain::TerrainGenerator;
+
+use crate::world::terrain::{NOISE_SCALING_FACTOR, SEED};
 
 #[allow(dead_code)]
-pub enum BlockType {
-    Dirt,
-    Grass,
-    Ice,
-    Lava,
-    Leaves,
-    Sand,
-    Snow,
-    Stone,
-    Water,
-    WaterDeep,
-    WoodLog,
-    WoodPlanks,
-}
-
-//i love traits
-pub trait TerrainGenerator {
-    fn get_block(&self, position: Vec2) -> Block;
-    fn get_block_type(&self, position: Vec2) -> BlockType;
-    fn get_block_shadow(&self, position: Vec2) -> u8;
-}
-
-#[allow(dead_code)]
-// grass only terrain generator
-pub struct GrassOnly;
-
-impl TerrainGenerator for GrassOnly {
-    fn get_block(&self, position: Vec2) -> Block {
-        Block::new(
-            position,
-            self.get_block_type(position),
-            self.get_block_shadow(position),
-        )
-    }
-    fn get_block_shadow(&self, position: Vec2) -> u8 {
-        0
-    }
-    fn get_block_type(&self, _position: Vec2) -> BlockType {
-        BlockType::Grass
-    }
-}
-
-#[allow(dead_code)]
-// Alpha terrain idk
-pub struct AlphaTerrain {
-    pub noise: FastNoise,
-}
-
-#[allow(dead_code)]
-impl AlphaTerrain {
-    pub fn new() -> AlphaTerrain {
-        let mut noise = FastNoise::seeded(SEED);
-        noise.set_noise_type(PerlinFractal);
-        noise.set_frequency(2.);
-        AlphaTerrain { noise }
-    }
-}
-
-impl TerrainGenerator for AlphaTerrain {
-    fn get_block_type(&self, position: Vec2) -> BlockType {
-        let current_noise = self.noise.get_noise(
-            position.x / NOISE_SCALING_FACTOR,
-            position.y / NOISE_SCALING_FACTOR,
-        );
-        if current_noise < 0.0 {
-            BlockType::Grass
-        } else {
-            BlockType::Dirt
-        }
-    }
-
-    fn get_block_shadow(&self, position: Vec2) -> u8 {
-        0
-    }
-
-    fn get_block(&self, position: Vec2) -> Block {
-        Block::new(
-            position,
-            self.get_block_type(position),
-            self.get_block_shadow(position),
-        )
-    }
-}
-
-pub struct BetterTerrain {
+pub struct NewTerrain {
     pub mountain_noise_cellular: FastNoise,
     pub land_or_sea_perlin: FastNoise,
     pub tree_perlin: FastNoise,
 }
 
-impl BetterTerrain {
-    pub fn new() -> BetterTerrain {
+impl NewTerrain {
+    pub fn new() -> NewTerrain {
         let mut mountain_noise_cellular = FastNoise::seeded(SEED);
         mountain_noise_cellular.set_noise_type(NoiseType::Cubic);
         mountain_noise_cellular.set_frequency(0.001);
@@ -112,7 +29,7 @@ impl BetterTerrain {
         let mut tree_perlin = FastNoise::seeded(SEED);
         tree_perlin.set_noise_type(NoiseType::Perlin);
         tree_perlin.set_frequency(5.);
-        BetterTerrain {
+        NewTerrain {
             mountain_noise_cellular,
             land_or_sea_perlin,
             tree_perlin,
@@ -120,7 +37,7 @@ impl BetterTerrain {
     }
 }
 
-impl TerrainGenerator for BetterTerrain {
+impl TerrainGenerator for NewTerrain {
     fn get_block_type(&self, position: Vec2) -> BlockType {
         let land_or_sea = self.land_or_sea_perlin.get_noise(
             position.x / NOISE_SCALING_FACTOR,

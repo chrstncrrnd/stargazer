@@ -107,14 +107,19 @@ impl Renderer {
                     ..Default::default()
                 },
             );
-            if self.terrain_generator.get_block_shadow(block.position) > 0 {
+            if block.shadow > 0 {
                 draw_rectangle_ex(
                     block.position.x,
                     block.position.y,
                     BLOCK_SIZE as f32,
                     BLOCK_SIZE as f32,
                     DrawRectangleParams {
-                        color: Color { r: 0., g: 0., b: 0., a: 0.3 },
+                        color: Color {
+                            r: 0.,
+                            g: 0.,
+                            b: 0.,
+                            a: 0.3,
+                        },
                         ..Default::default()
                     },
                 );
