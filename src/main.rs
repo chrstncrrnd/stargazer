@@ -4,7 +4,7 @@ use nodes::player::Player;
 use resources::Resources;
 
 use crate::scenes::planet_surface::renderer::Renderer;
-use crate::world::terrain::BetterTerrain;
+use crate::world::new_terrain::NewTerrain;
 
 mod nodes;
 mod resources;
@@ -35,7 +35,7 @@ async fn main() {
         game_resources.font,
     );
 
-    let mut planet_surface = Renderer::new(Box::new(BetterTerrain::new()));
+    let mut planet_surface = Renderer::new(Box::new(NewTerrain::new()));
 
     let mut camera = Camera2D {
         target: player.position,

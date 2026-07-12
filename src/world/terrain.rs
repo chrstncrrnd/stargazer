@@ -27,8 +27,6 @@ pub enum BlockType {
 //i love traits
 pub trait TerrainGenerator {
     fn get_block(&self, position: Vec2) -> Block;
-    fn get_block_type(&self, position: Vec2) -> BlockType;
-    fn get_block_shadow(&self, position: Vec2) -> u8;
 }
 
 #[allow(dead_code)]
@@ -40,12 +38,12 @@ impl TerrainGenerator for GrassOnly {
         Block::new(
             position,
             self.get_block_type(position),
-            self.get_block_shadow(position),
+            0,
         )
     }
-    fn get_block_shadow(&self, position: Vec2) -> u8 {
-        0
-    }
+}
+
+impl GrassOnly{
     fn get_block_type(&self, _position: Vec2) -> BlockType {
         BlockType::Grass
     }
@@ -68,6 +66,17 @@ impl AlphaTerrain {
 }
 
 impl TerrainGenerator for AlphaTerrain {
+    fn get_block(&self, position: Vec2) -> Block {
+        Block::new(
+            position,
+            self.get_block_type(position),
+            0,
+        )
+    }
+}
+
+
+impl AlphaTerrain{
     fn get_block_type(&self, position: Vec2) -> BlockType {
         let current_noise = self.noise.get_noise(
             position.x / NOISE_SCALING_FACTOR,
@@ -78,18 +87,6 @@ impl TerrainGenerator for AlphaTerrain {
         } else {
             BlockType::Dirt
         }
-    }
-
-    fn get_block_shadow(&self, position: Vec2) -> u8 {
-        0
-    }
-
-    fn get_block(&self, position: Vec2) -> Block {
-        Block::new(
-            position,
-            self.get_block_type(position),
-            self.get_block_shadow(position),
-        )
     }
 }
 
@@ -120,7 +117,7 @@ impl BetterTerrain {
     }
 }
 
-impl TerrainGenerator for BetterTerrain {
+impl BetterTerrain {
     fn get_block_type(&self, position: Vec2) -> BlockType {
         let land_or_sea = self.land_or_sea_perlin.get_noise(
             position.x / NOISE_SCALING_FACTOR,
@@ -169,6 +166,10 @@ impl TerrainGenerator for BetterTerrain {
             .get_noise(position.x, position.y - 1.);
         if at_pos > below { 1 } else { 0 }
     }
+
+}
+
+impl TerrainGenerator for BetterTerrain{
     fn get_block(&self, position: Vec2) -> Block {
         Block::new(
             position,
