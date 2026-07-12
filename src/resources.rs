@@ -42,7 +42,20 @@ impl BlockResources {
     pub async fn load() -> Result<BlockResources, fs::Error> {
         info!("Loading resources...");
 
-        load_blocks!(dirt, grass, ice, lava, leaves, sand, snow, stone, water, water_deep, wood_log, wood_planks);
+        load_blocks!(
+            dirt,
+            grass,
+            ice,
+            lava,
+            leaves,
+            sand,
+            snow,
+            stone,
+            water,
+            water_deep,
+            wood_log,
+            wood_planks
+        );
 
         info!("Done loading resources");
 

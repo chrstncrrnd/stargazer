@@ -38,7 +38,10 @@ impl Renderer {
 
     #[inline]
     fn is_in_render_area(render_area: &Rect, position: Vec2) -> bool {
-        position.x > render_area.x && position.x < render_area.x + render_area.w && position.y > render_area.y && position.y < render_area.y + render_area.h
+        position.x > render_area.x
+            && position.x < render_area.x + render_area.w
+            && position.y > render_area.y
+            && position.y < render_area.y + render_area.h
     }
 
     fn round_to_nearest(mut number: f32, nearest: f32) -> f32 {
@@ -51,7 +54,6 @@ impl Renderer {
     }
 
     pub fn render(&mut self, player: &Player, textures: &BlockResources) {
-
         let render_area = Rect {
             x: player.position.x - (screen_width() / 2.) - 150_f32,
             y: player.position.y - (screen_height() / 2.) - 150_f32,
@@ -65,11 +67,11 @@ impl Renderer {
             let width = Self::round_to_nearest(render_area.w, BLOCK_SIZE as f32) as i32;
             let height = Self::round_to_nearest(render_area.h, BLOCK_SIZE as f32) as i32;
 
-
             for x_coord in (x_pos..x_pos + width).step_by(BLOCK_SIZE) {
                 for y_coord in (y_pos..y_pos + height).step_by(BLOCK_SIZE) {
                     self.add_block_if_not_there(
-                        self.terrain_generator.get_block(Self::i32_vec2(x_coord, y_coord)),
+                        self.terrain_generator
+                            .get_block(Self::i32_vec2(x_coord, y_coord)),
                     );
                 }
             }
@@ -104,8 +106,19 @@ impl Renderer {
                     rotation: 0.0,
                     ..Default::default()
                 },
-            )
+            );
+            if self.terrain_generator.get_block_shadow(block.position) > 0 {
+                draw_rectangle_ex(
+                    block.position.x,
+                    block.position.y,
+                    BLOCK_SIZE as f32,
+                    BLOCK_SIZE as f32,
+                    DrawRectangleParams {
+                        color: Color { r: 0., g: 0., b: 0., a: 0.3 },
+                        ..Default::default()
+                    },
+                );
+            }
         }
     }
-
 }

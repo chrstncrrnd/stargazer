@@ -8,21 +8,20 @@ pub struct Player {
     name: String,
     player_speed: f32,
     facing_left: bool,
-    font: Font
+    font: Font,
 }
 
-
 impl Player {
-    pub fn new(texture: Texture2D, name: String, font: Font) -> Self{
-        Self{
+    pub fn new(texture: Texture2D, name: String, font: Font) -> Self {
+        Self {
             texture,
             width: 50.0,
             height: 50.0,
             name,
-            position: vec2(screen_width()/2., screen_height()/2.),
+            position: vec2(screen_width() / 2., screen_height() / 2.),
             player_speed: 100.0,
             facing_left: true,
-            font
+            font,
         }
     }
 
@@ -32,16 +31,16 @@ impl Player {
         //[w,a,s,d]
         let mut speeds: [f32; 4] = [0.; 4];
 
-        if is_key_down(KeyCode::W){
+        if is_key_down(KeyCode::W) {
             speeds[0] = speed;
         }
-        if is_key_down(KeyCode::A){
+        if is_key_down(KeyCode::A) {
             speeds[1] = speed;
         }
-        if is_key_down(KeyCode::S){
+        if is_key_down(KeyCode::S) {
             speeds[2] = speed;
         }
-        if is_key_down(KeyCode::D){
+        if is_key_down(KeyCode::D) {
             speeds[3] = speed;
         }
 
@@ -50,13 +49,11 @@ impl Player {
         self.position.y += speeds[2];
         self.position.x += speeds[3];
 
-
         //render the player name
         draw_text_ex(
             self.name.as_str(),
             self.position.x
-                - (measure_text(self.name.as_str(), Some(&self.font), 30, 1.0).width
-                    - self.width)
+                - (measure_text(self.name.as_str(), Some(&self.font), 30, 1.0).width - self.width)
                     / 2.0,
             self.position.y - 10.0,
             TextParams {
@@ -68,8 +65,6 @@ impl Player {
                 color: BLACK,
             },
         );
-
-
 
         draw_texture_ex(
             &self.texture,

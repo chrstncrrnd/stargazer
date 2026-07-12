@@ -29,7 +29,11 @@ async fn main() {
     let game_resources: Resources = Resources::load().await.unwrap();
 
     //main character, you can also create other characters with this.
-    let mut player = Player::new(game_resources.player_texture, "Chrstn".to_owned(), game_resources.font);
+    let mut player = Player::new(
+        game_resources.player_texture,
+        "Chrstn".to_owned(),
+        game_resources.font,
+    );
 
     let mut planet_surface = Renderer::new(Box::new(BetterTerrain::new()));
 
@@ -39,7 +43,6 @@ async fn main() {
         ..Default::default()
     };
 
-
     //main game loop
     loop {
         clear_background(WHITE);
@@ -48,14 +51,24 @@ async fn main() {
         set_camera(&camera);
         planet_surface.render(&player, &game_resources.block_resources);
         player.render();
-        draw_text(get_fps().to_string().as_str(), player.position.x - 100_f32, player.position.y - 200_f32, 20., BLACK);
-        draw_text(format!("XY: {}, {}", player.position.x, player.position.y).as_str(), player.position.x - 100_f32, player.position.y - 100_f32, 60.0, BLACK);
-        if is_key_down(KeyCode::Escape){
+        draw_text(
+            get_fps().to_string().as_str(),
+            player.position.x - 100_f32,
+            player.position.y - 200_f32,
+            20.,
+            BLACK,
+        );
+        draw_text(
+            format!("XY: {}, {}", player.position.x, player.position.y).as_str(),
+            player.position.x - 100_f32,
+            player.position.y - 100_f32,
+            60.0,
+            BLACK,
+        );
+        if is_key_down(KeyCode::Escape) {
             break;
         }
 
         next_frame().await;
     }
 }
-
-
