@@ -7,6 +7,7 @@ use macroquad::math::Vec2;
 
 pub const SEED: u64 = 43892;
 pub const NOISE_SCALING_FACTOR: f32 = 3000.0;
+pub const MAX_HEIGHT: f32 = 128.;
 
 #[allow(dead_code)]
 pub enum BlockType {
@@ -26,7 +27,7 @@ pub enum BlockType {
 
 //i love traits
 pub trait TerrainGenerator {
-    fn get_block(&self, position: Vec2) -> Block;
+    fn get_block(&mut self, position: Vec2) -> Block;
 }
 
 #[allow(dead_code)]
@@ -34,17 +35,13 @@ pub trait TerrainGenerator {
 pub struct GrassOnly;
 
 impl TerrainGenerator for GrassOnly {
-    fn get_block(&self, position: Vec2) -> Block {
-        Block::new(
-            position,
-            self.get_block_type(position),
-            0,
-        )
+    fn get_block(&mut self, position: Vec2) -> Block {
+        Block::new(position, self.get_block_type(position), 0)
     }
 }
 
-impl GrassOnly{
-    fn get_block_type(&self, _position: Vec2) -> BlockType {
+impl GrassOnly {
+    fn get_block_type(&mut self, _position: Vec2) -> BlockType {
         BlockType::Grass
     }
 }
@@ -66,18 +63,13 @@ impl AlphaTerrain {
 }
 
 impl TerrainGenerator for AlphaTerrain {
-    fn get_block(&self, position: Vec2) -> Block {
-        Block::new(
-            position,
-            self.get_block_type(position),
-            0,
-        )
+    fn get_block(&mut self, position: Vec2) -> Block {
+        Block::new(position, self.get_block_type(position), 0)
     }
 }
 
-
-impl AlphaTerrain{
-    fn get_block_type(&self, position: Vec2) -> BlockType {
+impl AlphaTerrain {
+    fn get_block_type(&mut self, position: Vec2) -> BlockType {
         let current_noise = self.noise.get_noise(
             position.x / NOISE_SCALING_FACTOR,
             position.y / NOISE_SCALING_FACTOR,
@@ -118,7 +110,7 @@ impl BetterTerrain {
 }
 
 impl BetterTerrain {
-    fn get_block_type(&self, position: Vec2) -> BlockType {
+    fn get_block_type(&mut self, position: Vec2) -> BlockType {
         let land_or_sea = self.land_or_sea_perlin.get_noise(
             position.x / NOISE_SCALING_FACTOR,
             position.y / NOISE_SCALING_FACTOR,
@@ -157,7 +149,7 @@ impl BetterTerrain {
         }
     }
 
-    fn get_block_shadow(&self, position: Vec2) -> u8 {
+    fn get_block_shadow(&mut self, position: Vec2) -> u8 {
         let at_pos = self
             .mountain_noise_cellular
             .get_noise(position.x, position.y);
@@ -166,11 +158,10 @@ impl BetterTerrain {
             .get_noise(position.x, position.y - 1.);
         if at_pos > below { 1 } else { 0 }
     }
-
 }
 
-impl TerrainGenerator for BetterTerrain{
-    fn get_block(&self, position: Vec2) -> Block {
+impl TerrainGenerator for BetterTerrain {
+    fn get_block(&mut self, position: Vec2) -> Block {
         Block::new(
             position,
             self.get_block_type(position),

@@ -1,80 +1,90 @@
+use std::collections::HashMap;
+
 use bracket_noise::prelude::FastNoise;
 use bracket_noise::prelude::NoiseType;
 use macroquad::math::Vec2;
+use macroquad::math::vec2;
 
+use crate::scenes::planet_surface::renderer::BLOCK_SIZE;
+use crate::utils::round_to_nearest;
+use crate::utils::vec2_i32_pair;
 use crate::world::block::Block;
-use crate::world::terrain::BlockType;
 use crate::world::terrain::BlockType::*;
+use crate::world::terrain::MAX_HEIGHT;
 use crate::world::terrain::TerrainGenerator;
 
-use crate::world::terrain::{NOISE_SCALING_FACTOR, SEED};
+use crate::world::terrain::{ SEED};
 
 #[allow(dead_code)]
 pub struct NewTerrain {
-    pub mountain_noise_cellular: FastNoise,
-    pub land_or_sea_perlin: FastNoise,
+    pub height_noise: FastNoise,
     pub tree_perlin: FastNoise,
+    height_map: HashMap<(i32, i32), i32>,
 }
 
 impl NewTerrain {
     pub fn new() -> NewTerrain {
-        let mut mountain_noise_cellular = FastNoise::seeded(SEED);
-        mountain_noise_cellular.set_noise_type(NoiseType::Cubic);
-        mountain_noise_cellular.set_frequency(0.001);
-
-        let mut land_or_sea_perlin = FastNoise::seeded(SEED);
-        land_or_sea_perlin.set_noise_type(NoiseType::Perlin);
-        land_or_sea_perlin.set_frequency(0.5);
+        let mut height_noise = FastNoise::seeded(SEED);
+        height_noise.set_noise_type(NoiseType::Perlin);
+        height_noise.set_frequency(0.001);
 
         let mut tree_perlin = FastNoise::seeded(SEED);
         tree_perlin.set_noise_type(NoiseType::Perlin);
         tree_perlin.set_frequency(5.);
         NewTerrain {
-            mountain_noise_cellular,
-            land_or_sea_perlin,
+            height_noise,
             tree_perlin,
+            height_map: HashMap::new(),
+        }
+    }
+}
+
+impl NewTerrain {
+    fn height_at(&mut self, position: Vec2) -> i32 {
+        let pair = vec2_i32_pair(position);
+        if self.height_map.contains_key(&pair) {
+            return self.height_map[&pair];
+        }
+
+        let mut val = ((self.height_noise.get_noise(position.x, position.y) + 1.) * MAX_HEIGHT / 2.) as i32;
+        if val < 0{
+            val = 0;
+        }
+        if val > MAX_HEIGHT as i32{
+            val = MAX_HEIGHT as i32;
+        }
+        self.height_map.insert(pair, val);
+        val
+    }
+
+
+    fn get_shadow_lvl(&mut self, position: Vec2) -> u8{
+        let here = self.height_at(position);
+        let above = self.height_at(vec2(position.x, position.y - BLOCK_SIZE as f32));
+        if above > here{
+            1
+        }else{
+            0
         }
     }
 }
 
 impl TerrainGenerator for NewTerrain {
-    fn get_block(&self, position: Vec2) -> Block {
-        let land_or_sea = self.land_or_sea_perlin.get_noise(
-            position.x / NOISE_SCALING_FACTOR,
-            position.y / NOISE_SCALING_FACTOR,
-        );
-        if land_or_sea < -0.1 {
-            //its water
-            Block::new(position, Water, 0)
-        } else if land_or_sea < -0.07 {
-            Block::new(position, Sand, 0)
-        } else {
-            //its land
-            //generate some mountains :sungalasses:
-            let mountain_noise = self
-                .mountain_noise_cellular
-                .get_noise(position.x, position.y);
-            if mountain_noise < -0.5 {
-                //snowy
-                Block::new(position, Snow, 0)
-            } else if mountain_noise < 0.2 {
-                //its a mountain
-                Block::new(position, Stone, 0)
-            } else {
-                //its not a mountain
-                let tree_noise = self.tree_perlin.get_noise(
-                    position.x / NOISE_SCALING_FACTOR,
-                    position.y / NOISE_SCALING_FACTOR,
-                );
-                if tree_noise < 0. {
-                    //tree
-                    Block::new(position, Leaves, 0)
-                } else {
-                    //not a tree
-                    Block::new(position, Grass, 0)
-                }
-            }
+    fn get_block(&mut self, position: Vec2) -> Block {
+        println!("Pos: {}", position);
+        let height = self.height_at(position);
+        let shadow = self.get_shadow_lvl(position);
+        if height < 30{
+            Block::new_height(position, Water, shadow, height)
+        }
+        else if height < 32{
+            Block::new_height(position, Sand, shadow, height)
+        }else if height < 60{
+            Block::new_height(position, Grass, shadow, height)
+        }else if height < 100{
+            Block::new_height(position, Stone, shadow, height)
+        }else {
+            Block::new_height(position, Snow, shadow, height)
         }
     }
-
 }

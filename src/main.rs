@@ -6,10 +6,10 @@ use resources::Resources;
 use crate::scenes::planet_surface::renderer::Renderer;
 use crate::world::new_terrain::NewTerrain;
 
-mod utils;
 mod nodes;
 mod resources;
 mod scenes;
+mod utils;
 mod world;
 
 #[allow(dead_code)]
@@ -40,7 +40,7 @@ async fn main() {
 
     let mut camera = Camera2D {
         target: player.position,
-        zoom: vec2(1. / screen_width(), 1. / screen_height()),
+        zoom: vec2(2. / screen_width(), 2. / screen_height()),
         ..Default::default()
     };
 

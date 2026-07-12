@@ -1,14 +1,13 @@
 use crate::nodes::player::Player;
 use crate::resources::BlockResources;
+use crate::utils::{i32_vec2, round_to_nearest};
 use crate::world::block::Block;
 use crate::world::terrain::BlockType;
 use crate::world::terrain::TerrainGenerator;
-use crate::utils::i32_vec2;
-
 
 use macroquad::prelude::*;
 
-const BLOCK_SIZE: usize = 50;
+pub const BLOCK_SIZE: usize = 50;
 
 pub struct Renderer {
     blocks: Vec<Block>,
@@ -34,8 +33,6 @@ impl Renderer {
         self.blocks.push(block1);
     }
 
-
-    #[inline]
     fn is_in_render_area(render_area: &Rect, position: Vec2) -> bool {
         position.x > render_area.x
             && position.x < render_area.x + render_area.w
@@ -43,14 +40,7 @@ impl Renderer {
             && position.y < render_area.y + render_area.h
     }
 
-    fn round_to_nearest(mut number: f32, nearest: f32) -> f32 {
-        if (number % nearest) >= nearest / 2_f32 {
-            number = number + (nearest - (number % nearest))
-        } else {
-            number = number - (number % nearest)
-        }
-        number
-    }
+
 
     pub fn render(&mut self, player: &Player, textures: &BlockResources) {
         let render_area = Rect {
@@ -61,16 +51,17 @@ impl Renderer {
         };
 
         if !(self.prev_render_area == render_area) {
-            let x_pos = Self::round_to_nearest(render_area.x, BLOCK_SIZE as f32) as i32;
-            let y_pos = Self::round_to_nearest(render_area.y, BLOCK_SIZE as f32) as i32;
-            let width = Self::round_to_nearest(render_area.w, BLOCK_SIZE as f32) as i32;
-            let height = Self::round_to_nearest(render_area.h, BLOCK_SIZE as f32) as i32;
+            let x_pos = round_to_nearest(render_area.x, BLOCK_SIZE as f32) as i32;
+            let y_pos = round_to_nearest(render_area.y, BLOCK_SIZE as f32) as i32;
+            let width = round_to_nearest(render_area.w, BLOCK_SIZE as f32) as i32;
+            let height = round_to_nearest(render_area.h, BLOCK_SIZE as f32) as i32;
 
             for x_coord in (x_pos..x_pos + width).step_by(BLOCK_SIZE) {
                 for y_coord in (y_pos..y_pos + height).step_by(BLOCK_SIZE) {
+                    let block = 
+                        self.terrain_generator.get_block(i32_vec2(x_coord, y_coord));
                     self.add_block_if_not_there(
-                        self.terrain_generator
-                            .get_block(i32_vec2(x_coord, y_coord)),
+                        block
                     );
                 }
             }
@@ -106,7 +97,6 @@ impl Renderer {
                     ..Default::default()
                 },
             );
-            if block.shadow > 0 {
                 draw_rectangle_ex(
                     block.position.x,
                     block.position.y,
@@ -117,12 +107,13 @@ impl Renderer {
                             r: 0.,
                             g: 0.,
                             b: 0.,
-                            a: 0.3,
+                            a: block.shadow as f32 / 4.,
                         },
                         ..Default::default()
                     },
                 );
-            }
+
+            draw_text(block.height.to_string(), block.position.x, block.position.y, 30., BLACK);
         }
     }
 }
